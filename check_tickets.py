@@ -203,11 +203,21 @@ def main():
             print(f"  → Telegram: {', '.join(reasons)}")
             notified = True
 
+        history = prev.get("history", [])
+        history.append({
+            "ts":            ts,
+            "min_price":     data["min_price"],
+            "avg_price":     data["avg_price"],
+            "listing_count": data["listing_count"],
+        })
+        history = history[-48:]  # últimas 48 entradas (~12hs de historial)
+
         state[mid] = {
             "min_price":     data["min_price"],
             "avg_price":     data["avg_price"],
             "listing_count": data["listing_count"],
             "last_checked":  ts,
+            "history":       history,
         }
 
     save_state(state)
