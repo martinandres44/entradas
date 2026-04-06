@@ -318,8 +318,25 @@ def main():
         history = prev.get("history", [])
         history.append({"ts": ts, "min_price": data["min_price"],
                          "avg_price": data["avg_price"], "listing_count": data["listing_count"]})
-        state[mid] = {**data, "last_checked": ts, "history": history[-48:]}
-        state[mid].pop("sources", None)   # no guardar detalle de fuentes en el JSON
+
+        # Guardar detalle por fuente para el dashboard
+        sources_summary = {}
+        for s in data.get("sources", []):
+            sources_summary[s["source"]] = {
+                "min_price":     s.get("min_price"),
+                "listing_count": s.get("listing_count"),
+                "ok":            s.get("ok", False),
+                "error":         s.get("error"),
+            }
+
+        state[mid] = {
+            "min_price":     data["min_price"],
+            "avg_price":     data["avg_price"],
+            "listing_count": data["listing_count"],
+            "last_checked":  ts,
+            "history":       history[-48:],
+            "by_source":     sources_summary,
+        }
 
     save_state(state)
 
