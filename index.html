@@ -182,22 +182,25 @@ function badge(price){
 }
 
 function renderSources(state){
+  const by = state.by_source || {};
   const sources = [
-    {name:"SeatGeek", price:state.seatgeek_min, count:state.seatgeek_count, url:"seatgeek"},
-    {name:"TickPick",  price:state.tickpick_min, count:null, url:"tickpick"},
-    {name:"Gametime",  price:state.gametime_min, count:null, url:"gametime"},
-  ];
-  // Si no hay datos por fuente, no mostramos la sección
-  if(sources.every(s=>!s.price)) return "";
+    {name:"SeatGeek", key:"SeatGeek", url:"seatgeek"},
+    {name:"TickPick",  key:"TickPick",  url:"tickpick"},
+    {name:"Gametime",  key:"Gametime",  url:"gametime"},
+  ].map(s => ({...s, ...( by[s.key] || {})}));
+
+  // siempre mostrar la seccion de fuentes
   return `<div class="sources-grid">
-    ${sources.map(s=>`
-      <div class="source-card">
+    ${sources.map(s=>{
+      const ok = s.ok !== false;
+      return `<div class="source-card" style="${!ok?'opacity:.5':''}">
         <div>
-          <div class="source-name">${s.name}</div>
-          ${s.count!=null?`<div class="source-count">${s.count.toLocaleString()} listings</div>`:""}
+          <div class="source-name">${s.name}${!ok?' ⚠️':''}</div>
+          ${s.listing_count!=null?`<div class="source-count">${Number(s.listing_count).toLocaleString()} listings</div>`:"<div class=\"source-count\">listings: —</div>"}
         </div>
-        <div class="source-price">${fmt(s.price)}</div>
-      </div>`).join("")}
+        <div class="source-price">${fmt(s.min_price)}</div>
+      </div>`;
+    }).join("")}
   </div>`;
 }
 
