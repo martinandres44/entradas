@@ -189,8 +189,12 @@ function renderSources(state){
     {name:"Gametime",  key:"Gametime",  showCount:false},
   ].map(s => ({...s, ...(by[s.key] || {})}));
 
+  // Solo mostrar fuentes que tienen precio
+  const withPrice = sources.filter(s => s.min_price != null);
+  if(!withPrice.length) return "";
+
   return `<div class="sources-grid">
-    ${sources.map(s=>{
+    ${withPrice.map(s=>{
       const countLine = s.showCount && s.listing_count != null
         ? `<div class="source-count">${Number(s.listing_count).toLocaleString()} listings</div>`
         : "";
