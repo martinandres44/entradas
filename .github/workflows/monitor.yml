@@ -2,12 +2,15 @@ name: FIFA Ticket Monitor
 
 on:
   schedule:
-    - cron: '*/15 * * * *'   # cada 15 minutos
-  workflow_dispatch:           # permite correrlo manualmente
+    - cron: '*/15 * * * *'
+  workflow_dispatch:
 
 jobs:
   check-tickets:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
     steps:
       - uses: actions/checkout@v4.2.2
 
@@ -19,16 +22,17 @@ jobs:
       - name: Install dependencies
         run: pip install requests
 
-      - name: Check FIFA tickets
+      - name: Check tickets
         env:
-          TELEGRAM_BOT_TOKEN:  ${{ secrets.TELEGRAM_BOT_TOKEN }}
-          TELEGRAM_CHAT_ID:    ${{ secrets.TELEGRAM_CHAT_ID }}
-          SEATGEEK_CLIENT_ID:  ${{ secrets.SEATGEEK_CLIENT_ID }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID:   ${{ secrets.TELEGRAM_CHAT_ID }}
+          SEATGEEK_CLIENT_ID: ${{ secrets.SEATGEEK_CLIENT_ID }}
         run: python check_tickets.py
 
-      - name: Save state
-        uses: actions/upload-artifact@v4
-        with:
-          name: ticket-state
-          path: ticket_state.json
-          overwrite: true
+      - name: Commit updated state
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add ticket_state.json
+          git diff --staged --quiet || git commit -m "chore: update ticket state [skip ci]"
+          git push
