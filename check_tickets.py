@@ -55,117 +55,139 @@ MATCHES = [
 
 def scrape_tickpick(url: str) -> dict:
     """
-    Usa la API interna de TickPick para obtener precio minimo y cantidad real.
-    El event_id esta al final de la URL, ej: .../6259640/
+    1. Intenta API interna: api.tickpick.com/1.0/listings/internal/event/{id}
+    2. Fallback: scraping HTML (precio en texto + conteo en JSON embebido)
     """
-    try:
-        # Extraer event_id de la URL
-        m = re.search(r'/(\d{6,8})/?$', url)
-        if not m:
-            raise ValueError("No se pudo extraer event_id de la URL")
-        event_id = m.group(1)
+    # Extraer event_id de la URL
+    m = re.search(r"/(\d{6,8})/?$", url)
+    event_id = m.group(1) if m else None
 
-        api_url = f"https://api.tickpick.com/1.0/listings/internal/event/{event_id}?mid={event_id}"
-        r = requests.get(api_url, headers=HEADERS, timeout=20)
-
-        if r.status_code != 200:
-            raise ValueError(f"HTTP {r.status_code}")
-
-        data = r.json()
-        # La API devuelve una lista de listings con precio
-        listings = data if isinstance(data, list) else data.get("listings", [])
-        prices = [l.get("c") or l.get("price") or l.get("listingPrice") for l in listings if l]
-        prices = [int(p) for p in prices if p and 100 < int(p) < 20000]
-
-        return {
-            "source":        "TickPick",
-            "min_price":     min(prices) if prices else None,
-            "listing_count": len(listings) if listings else None,
-            "ok":            True,
-        }
-    except Exception as e:
-        # Fallback: scraping HTML
+    # Intento 1: API interna
+    if event_id:
         try:
-            r = requests.get(url, headers=HEADERS, timeout=20)
-            body = r.text
-            m2 = re.search(r'start at \$([0-9,]+)', body, re.IGNORECASE)
-            price = int(m2.group(1).replace(",", "")) if m2 else None
-            return {"source": "TickPick", "min_price": price, "listing_count": None, "ok": True}
-        except Exception as e2:
-            return {"source": "TickPick", "ok": False, "error": str(e2)[:80]}
+            api_url = f"https://api.tickpick.com/1.0/listings/internal/event/{event_id}?mid={event_id}"
+            r = requests.get(api_url, headers=HEADERS, timeout=15)
+            if r.status_code == 200:
+                data = r.json()
+                listings = data if isinstance(data, list) else data.get("listings", [])
+                if listings:
+                    prices = []
+                    for l in listings:
+                        p = l.get("c") or l.get("price") or l.get("listingPrice") or l.get("p")
+                        if p:
+                            try:
+                                prices.append(int(float(p)))
+                            except Exception:
+                                pass
+                    prices = [p for p in prices if 100 < p < 20000]
+                    return {
+                        "source":        "TickPick",
+                        "min_price":     min(prices) if prices else None,
+                        "listing_count": len(listings),
+                        "ok":            True,
+                    }
+        except Exception:
+            pass
+
+    # Intento 2: Scraping HTML
+    try:
+        r = requests.get(url, headers=HEADERS, timeout=20)
+        body = r.text
+        # Precio en texto estatico
+        mp = re.search(r"start at \$([0-9,]+)", body, re.IGNORECASE)
+        price = int(mp.group(1).replace(",", "")) if mp else None
+        # Conteo en JSON embebido (TickPick incluye datos en window.__PRELOADED_STATE__)
+        mc = re.search(r'"totalListings"\s*:\s*(\d+)', body)
+        if not mc:
+            mc = re.search(r'"listingCount"\s*:\s*(\d+)', body)
+        count = int(mc.group(1)) if mc else None
+        return {"source": "TickPick", "min_price": price, "listing_count": count, "ok": True}
+    except Exception as e:
+        return {"source": "TickPick", "ok": False, "error": str(e)[:80]}
 
 
 def scrape_gametime(url: str) -> dict:
     """
-    Gametime expone una API interna en /api/v2/events/{event_id}/listings
-    El event_id esta al final de la URL despues de /events/
+    1. Intenta API interna: gametime.co/api/v2/events/{id}/listings
+    2. Fallback: scraping HTML buscando JSON embebido en la pagina
     """
+    m = re.search(r"/events/([a-f0-9]{20,})", url)
+    event_id = m.group(1) if m else None
+
+    # Intento 1: API interna
+    if event_id:
+        try:
+            api_url = f"https://gametime.co/api/v2/events/{event_id}/listings"
+            api_headers = {**HEADERS, "Accept": "application/json", "X-Requested-With": "XMLHttpRequest"}
+            r = requests.get(api_url, headers=api_headers, timeout=15)
+            if r.status_code == 200:
+                data = r.json()
+                listings = data.get("listings", data if isinstance(data, list) else [])
+                if listings:
+                    prices = []
+                    for l in listings:
+                        p = l.get("price") or l.get("list_price") or l.get("display_price") or l.get("amount")
+                        if p:
+                            try:
+                                prices.append(int(float(str(p).replace("$", "").replace(",", ""))))
+                            except Exception:
+                                pass
+                    prices = [p for p in prices if 100 < p < 20000]
+                    return {
+                        "source":        "Gametime",
+                        "min_price":     min(prices) if prices else None,
+                        "listing_count": len(listings),
+                        "ok":            True,
+                    }
+        except Exception:
+            pass
+
+    # Intento 2: scraping HTML
     try:
-        # Extraer event_id de la URL
-        m = re.search(r'/events/([a-f0-9]+)', url)
-        if not m:
-            raise ValueError("No se pudo extraer event_id")
-        event_id = m.group(1)
-
-        api_url = f"https://gametime.co/api/v2/events/{event_id}/listings"
-        api_headers = {**HEADERS, "Accept": "application/json", "X-Requested-With": "XMLHttpRequest"}
-        r = requests.get(api_url, headers=api_headers, timeout=20)
-
-        if r.status_code != 200:
-            raise ValueError(f"HTTP {r.status_code}")
-
-        data = r.json()
-        listings = data.get("listings", data if isinstance(data, list) else [])
-        prices = []
-        for l in listings:
-            p = l.get("price") or l.get("list_price") or l.get("display_price")
-            if p:
-                try:
-                    prices.append(int(float(str(p).replace("$","").replace(",",""))))
-                except Exception:
-                    pass
-        prices = [p for p in prices if 100 < p < 20000]
-
+        r = requests.get(url, headers=HEADERS, timeout=20)
+        body = r.text
+        # Precios en JSON embebido (Gametime usa Next.js con datos en __NEXT_DATA__)
+        prices = re.findall(r'"price"\s*:\s*"?(\d+(?:\.\d+)?)"?', body)
+        prices = [int(float(p)) for p in prices if 100 < int(float(p)) < 20000]
+        # Conteo
+        mc = re.search(r'"total(?:_listings|Listings|Count)"\s*:\s*(\d+)', body)
+        count = int(mc.group(1)) if mc else None
         return {
             "source":        "Gametime",
             "min_price":     min(prices) if prices else None,
-            "listing_count": len(listings) if listings else None,
+            "listing_count": count,
             "ok":            True,
         }
     except Exception as e:
-        # Fallback: scraping HTML
-        try:
-            r = requests.get(url, headers=HEADERS, timeout=20)
-            body = r.text
-            prices = re.findall(r'"price"\s*:\s*"?(\d+(?:\.\d+)?)"?', body)
-            prices = [int(float(p)) for p in prices if 100 < int(float(p)) < 20000]
-            return {"source": "Gametime", "min_price": min(prices) if prices else None, "listing_count": None, "ok": True}
-        except Exception as e2:
-            return {"source": "Gametime", "ok": False, "error": str(e2)[:80]}
+        return {"source": "Gametime", "ok": False, "error": str(e)[:80]}
 
 
 def fetch_seatgeek(event_id: int) -> dict:
     """
-    Llama a la API de SeatGeek en dos pasos:
-    1. /events/{id}  -> precio minimo y promedio
-    2. /listings     -> conteo real de listings (igual al que muestra la web)
+    Llama a la API oficial de SeatGeek.
+    /events/{id} devuelve precio minimo, promedio y listing_count en stats.
+    Si el client_id es valido tambien intenta /listings para el conteo real.
     """
     try:
         params = {"client_id": SEATGEEK_CLIENT_ID} if SEATGEEK_CLIENT_ID else {}
-
-        # Paso 1: datos del evento
         r = requests.get(f"https://api.seatgeek.com/2/events/{event_id}", params=params, timeout=15)
         if r.status_code != 200:
             return {"source": "SeatGeek", "ok": False, "error": f"HTTP {r.status_code}"}
-        stats = r.json().get("stats", {})
+        data = r.json()
+        stats = data.get("stats", {})
+        listing_count = stats.get("listing_count")
 
-        # Paso 2: conteo real de listings
-        params_l = {**params, "event_id": event_id, "per_page": 1}
-        rl = requests.get("https://api.seatgeek.com/2/listings", params=params_l, timeout=15)
-        if rl.status_code == 200:
-            listing_count = rl.json().get("meta", {}).get("total") or stats.get("listing_count")
-        else:
-            listing_count = stats.get("listing_count")
+        # Intentar /listings solo si tenemos client_id (evita 401)
+        if SEATGEEK_CLIENT_ID:
+            try:
+                params_l = {**params, "event_id": event_id, "per_page": 1}
+                rl = requests.get("https://api.seatgeek.com/2/listings", params=params_l, timeout=10)
+                if rl.status_code == 200:
+                    total = rl.json().get("meta", {}).get("total")
+                    if total:
+                        listing_count = total
+            except Exception:
+                pass  # No fatal, usamos el listing_count de stats
 
         return {
             "source":        "SeatGeek",
