@@ -163,51 +163,24 @@ def scrape_gametime(url: str) -> dict:
 
 
 def fetch_seatgeek(event_id: int) -> dict:
-    """
-    Llama a la API oficial de SeatGeek.
-    /events/{id} devuelve precio minimo, promedio y listing_count en stats.
-    Si el client_id es valido tambien intenta /listings para el conteo real.
-    """
+    """Llama a la API oficial de SeatGeek."""
     try:
         params = {"client_id": SEATGEEK_CLIENT_ID} if SEATGEEK_CLIENT_ID else {}
-        r = requests.get(f"https://api.seatgeek.com/2/events/{event_id}", params=params, timeout=15)
-        # Si falla con auth, reintentar sin client_id
-        if r.status_code in (401, 403) and SEATGEEK_CLIENT_ID:
-            r = requests.get(f"https://api.seatgeek.com/2/events/{event_id}", timeout=15)
+        r = requests.get(
+            f"https://api.seatgeek.com/2/events/{event_id}",
+            params=params, timeout=15
+        )
         if r.status_code != 200:
             return {"source": "SeatGeek", "ok": False, "error": f"HTTP {r.status_code}"}
-        data = r.json()
+
+        data  = r.json()
         stats = data.get("stats", {})
-        listing_count = stats.get("listing_count")
-
-        # Intentar /listings solo si tenemos client_id (evita 401)
-        if SEATGEEK_CLIENT_ID:
-            try:
-                params_l = {**params, "event_id": event_id, "per_page": 1}
-                rl = requests.get("https://api.seatgeek.com/2/listings", params=params_l, timeout=10)
-                if rl.status_code == 200:
-                    total = rl.json().get("meta", {}).get("total")
-                    if total:
-                        listing_count = total
-            except Exception:
-                pass  # No fatal, usamos el listing_count de stats
-
-        # SeatGeek a veces mete el precio en performers[0].stats en vez de event.stats
-        min_price = stats.get("lowest_price")
-        avg_price = stats.get("average_price")
-        if not min_price:
-            for p in data.get("performers", []):
-                ps = p.get("stats", {})
-                if ps.get("lowest_price"):
-                    min_price = ps.get("lowest_price")
-                    avg_price = avg_price or ps.get("average_price")
-                    break
 
         return {
             "source":        "SeatGeek",
-            "min_price":     min_price,
-            "avg_price":     avg_price,
-            "listing_count": listing_count,
+            "min_price":     stats.get("lowest_price"),
+            "avg_price":     stats.get("average_price"),
+            "listing_count": stats.get("listing_count"),
             "ok":            True,
         }
     except Exception as e:
