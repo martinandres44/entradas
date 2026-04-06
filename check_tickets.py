@@ -171,6 +171,9 @@ def fetch_seatgeek(event_id: int) -> dict:
     try:
         params = {"client_id": SEATGEEK_CLIENT_ID} if SEATGEEK_CLIENT_ID else {}
         r = requests.get(f"https://api.seatgeek.com/2/events/{event_id}", params=params, timeout=15)
+        # Si falla con auth, reintentar sin client_id
+        if r.status_code in (401, 403) and SEATGEEK_CLIENT_ID:
+            r = requests.get(f"https://api.seatgeek.com/2/events/{event_id}", timeout=15)
         if r.status_code != 200:
             return {"source": "SeatGeek", "ok": False, "error": f"HTTP {r.status_code}"}
         data = r.json()
