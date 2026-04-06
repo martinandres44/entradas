@@ -55,57 +55,123 @@ MATCHES = [
 
 def scrape_tickpick(url: str) -> dict:
     """
-    TickPick muestra el precio mínimo en texto estático:
-    'Prices for ... start at $824'
+    Usa la API interna de TickPick para obtener precio minimo y cantidad real.
+    El event_id esta al final de la URL, ej: .../6259640/
     """
     try:
-        r = requests.get(url, headers=HEADERS, timeout=20)
-        body = r.text
-        m = re.search(r'start at \$([0-9,]+)', body, re.IGNORECASE)
-        price = int(m.group(1).replace(",", "")) if m else None
-        # Cantidad: buscar número de listings en el HTML
-        mc = re.search(r'(\d[\d,]*)\s+ticket', body, re.IGNORECASE)
-        count = int(mc.group(1).replace(",", "")) if mc and int(mc.group(1).replace(",","")) < 50000 else None
-        return {"source": "TickPick", "min_price": price, "listing_count": count, "ok": True}
+        # Extraer event_id de la URL
+        m = re.search(r'/(\d{6,8})/?$', url)
+        if not m:
+            raise ValueError("No se pudo extraer event_id de la URL")
+        event_id = m.group(1)
+
+        api_url = f"https://api.tickpick.com/1.0/listings/internal/event/{event_id}?mid={event_id}"
+        r = requests.get(api_url, headers=HEADERS, timeout=20)
+
+        if r.status_code != 200:
+            raise ValueError(f"HTTP {r.status_code}")
+
+        data = r.json()
+        # La API devuelve una lista de listings con precio
+        listings = data if isinstance(data, list) else data.get("listings", [])
+        prices = [l.get("c") or l.get("price") or l.get("listingPrice") for l in listings if l]
+        prices = [int(p) for p in prices if p and 100 < int(p) < 20000]
+
+        return {
+            "source":        "TickPick",
+            "min_price":     min(prices) if prices else None,
+            "listing_count": len(listings) if listings else None,
+            "ok":            True,
+        }
     except Exception as e:
-        return {"source": "TickPick", "ok": False, "error": str(e)[:80]}
+        # Fallback: scraping HTML
+        try:
+            r = requests.get(url, headers=HEADERS, timeout=20)
+            body = r.text
+            m2 = re.search(r'start at \$([0-9,]+)', body, re.IGNORECASE)
+            price = int(m2.group(1).replace(",", "")) if m2 else None
+            return {"source": "TickPick", "min_price": price, "listing_count": None, "ok": True}
+        except Exception as e2:
+            return {"source": "TickPick", "ok": False, "error": str(e2)[:80]}
 
 
 def scrape_gametime(url: str) -> dict:
     """
-    Gametime muestra precios en su HTML con patrones como '$938' o 'from $938'
+    Gametime expone una API interna en /api/v2/events/{event_id}/listings
+    El event_id esta al final de la URL despues de /events/
     """
     try:
-        r = requests.get(url, headers=HEADERS, timeout=20)
-        body = r.text
-        # Gametime mete el precio en JSON-LD o en el HTML directamente
-        prices = re.findall(r'"price"\s*:\s*"?(\d+(?:\.\d+)?)"?', body)
-        prices += re.findall(r'from \$(\d{3,5})', body, re.IGNORECASE)
-        prices += re.findall(r'starting at \$(\d{3,5})', body, re.IGNORECASE)
-        prices = [int(float(p)) for p in prices if 100 < int(float(p)) < 20000]
-        min_price = min(prices) if prices else None
+        # Extraer event_id de la URL
+        m = re.search(r'/events/([a-f0-9]+)', url)
+        if not m:
+            raise ValueError("No se pudo extraer event_id")
+        event_id = m.group(1)
 
-        mc = re.search(r'(\d[\d,]*)\s+ticket', body, re.IGNORECASE)
-        count = int(mc.group(1).replace(",", "")) if mc and int(mc.group(1).replace(",","")) < 50000 else None
+        api_url = f"https://gametime.co/api/v2/events/{event_id}/listings"
+        api_headers = {**HEADERS, "Accept": "application/json", "X-Requested-With": "XMLHttpRequest"}
+        r = requests.get(api_url, headers=api_headers, timeout=20)
 
-        return {"source": "Gametime", "min_price": min_price, "listing_count": count, "ok": True}
+        if r.status_code != 200:
+            raise ValueError(f"HTTP {r.status_code}")
+
+        data = r.json()
+        listings = data.get("listings", data if isinstance(data, list) else [])
+        prices = []
+        for l in listings:
+            p = l.get("price") or l.get("list_price") or l.get("display_price")
+            if p:
+                try:
+                    prices.append(int(float(str(p).replace("$","").replace(",",""))))
+                except Exception:
+                    pass
+        prices = [p for p in prices if 100 < p < 20000]
+
+        return {
+            "source":        "Gametime",
+            "min_price":     min(prices) if prices else None,
+            "listing_count": len(listings) if listings else None,
+            "ok":            True,
+        }
     except Exception as e:
-        return {"source": "Gametime", "ok": False, "error": str(e)[:80]}
+        # Fallback: scraping HTML
+        try:
+            r = requests.get(url, headers=HEADERS, timeout=20)
+            body = r.text
+            prices = re.findall(r'"price"\s*:\s*"?(\d+(?:\.\d+)?)"?', body)
+            prices = [int(float(p)) for p in prices if 100 < int(float(p)) < 20000]
+            return {"source": "Gametime", "min_price": min(prices) if prices else None, "listing_count": None, "ok": True}
+        except Exception as e2:
+            return {"source": "Gametime", "ok": False, "error": str(e2)[:80]}
 
 
 def fetch_seatgeek(event_id: int) -> dict:
-    """Llama a la API JSON de SeatGeek."""
+    """
+    Llama a la API de SeatGeek en dos pasos:
+    1. /events/{id}  -> precio minimo y promedio
+    2. /listings     -> conteo real de listings (igual al que muestra la web)
+    """
     try:
         params = {"client_id": SEATGEEK_CLIENT_ID} if SEATGEEK_CLIENT_ID else {}
+
+        # Paso 1: datos del evento
         r = requests.get(f"https://api.seatgeek.com/2/events/{event_id}", params=params, timeout=15)
         if r.status_code != 200:
             return {"source": "SeatGeek", "ok": False, "error": f"HTTP {r.status_code}"}
         stats = r.json().get("stats", {})
+
+        # Paso 2: conteo real de listings
+        params_l = {**params, "event_id": event_id, "per_page": 1}
+        rl = requests.get("https://api.seatgeek.com/2/listings", params=params_l, timeout=15)
+        if rl.status_code == 200:
+            listing_count = rl.json().get("meta", {}).get("total") or stats.get("listing_count")
+        else:
+            listing_count = stats.get("listing_count")
+
         return {
             "source":        "SeatGeek",
             "min_price":     stats.get("lowest_price"),
             "avg_price":     stats.get("average_price"),
-            "listing_count": stats.get("listing_count"),
+            "listing_count": listing_count,
             "ok":            True,
         }
     except Exception as e:
