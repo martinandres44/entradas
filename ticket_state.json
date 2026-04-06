@@ -3,7 +3,7 @@
     "min_price": 932,
     "avg_price": null,
     "listing_count": null,
-    "last_checked": "06/04/2026 19:44 UTC",
+    "last_checked": "06/04/2026 19:51 UTC",
     "history": [
       {
         "ts": "06/04/2026 18:10 UTC",
@@ -58,14 +58,20 @@
         "min_price": 932,
         "avg_price": null,
         "listing_count": null
+      },
+      {
+        "ts": "06/04/2026 19:51 UTC",
+        "min_price": 932,
+        "avg_price": null,
+        "listing_count": null
       }
     ],
     "by_source": {
       "SeatGeek": {
         "min_price": null,
         "listing_count": null,
-        "ok": false,
-        "error": "HTTP 403"
+        "ok": true,
+        "error": null
       },
       "TickPick": {
         "min_price": 975,
@@ -85,7 +91,7 @@
     "min_price": 1151,
     "avg_price": null,
     "listing_count": null,
-    "last_checked": "06/04/2026 19:44 UTC",
+    "last_checked": "06/04/2026 19:51 UTC",
     "history": [
       {
         "ts": "06/04/2026 18:10 UTC",
@@ -140,6 +146,12 @@
         "min_price": 1151,
         "avg_price": null,
         "listing_count": null
+      },
+      {
+        "ts": "06/04/2026 19:51 UTC",
+        "min_price": 1151,
+        "avg_price": null,
+        "listing_count": null
       }
     ],
     "by_source": {
@@ -147,7 +159,7 @@
         "min_price": null,
         "listing_count": null,
         "ok": false,
-        "error": "HTTP 403"
+        "error": "HTTP 404"
       },
       "TickPick": {
         "min_price": 1151,
