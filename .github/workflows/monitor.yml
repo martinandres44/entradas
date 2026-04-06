@@ -21,6 +21,14 @@ jobs:
 
       - name: Check FIFA tickets
         env:
-          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
-          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          TELEGRAM_BOT_TOKEN:  ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID:    ${{ secrets.TELEGRAM_CHAT_ID }}
+          SEATGEEK_CLIENT_ID:  ${{ secrets.SEATGEEK_CLIENT_ID }}
         run: python check_tickets.py
+
+      - name: Save state
+        uses: actions/upload-artifact@v4
+        with:
+          name: ticket-state
+          path: ticket_state.json
+          overwrite: true
