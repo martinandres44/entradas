@@ -193,7 +193,6 @@ def fetch_seatgeek(event_id: int) -> dict:
 
 def collect_match_data(match: dict) -> dict:
     results = [
-        fetch_seatgeek(match["seatgeek_id"]),
         scrape_tickpick(match["tickpick_url"]),
         scrape_gametime(match["gametime_url"]),
     ]
