@@ -184,19 +184,20 @@ function badge(price){
 function renderSources(state){
   const by = state.by_source || {};
   const sources = [
-    {name:"SeatGeek", key:"SeatGeek", url:"seatgeek"},
-    {name:"TickPick",  key:"TickPick",  url:"tickpick"},
-    {name:"Gametime",  key:"Gametime",  url:"gametime"},
-  ].map(s => ({...s, ...( by[s.key] || {})}));
+    {name:"SeatGeek", key:"SeatGeek", showCount:true},
+    {name:"TickPick",  key:"TickPick",  showCount:false},
+    {name:"Gametime",  key:"Gametime",  showCount:false},
+  ].map(s => ({...s, ...(by[s.key] || {})}));
 
-  // siempre mostrar la seccion de fuentes
   return `<div class="sources-grid">
     ${sources.map(s=>{
-      const ok = s.ok !== false;
-      return `<div class="source-card" style="${!ok?'opacity:.5':''}">
+      const countLine = s.showCount && s.listing_count != null
+        ? `<div class="source-count">${Number(s.listing_count).toLocaleString()} listings</div>`
+        : "";
+      return `<div class="source-card">
         <div>
-          <div class="source-name">${s.name}${!ok?' ⚠️':''}</div>
-          ${s.listing_count!=null?`<div class="source-count">${Number(s.listing_count).toLocaleString()} listings</div>`:"<div class=\"source-count\">listings: —</div>"}
+          <div class="source-name">${s.name}</div>
+          ${countLine}
         </div>
         <div class="source-price">${fmt(s.min_price)}</div>
       </div>`;
@@ -256,8 +257,8 @@ function renderMatch(cfg, state){
         <div class="stat-sub">USD · todos los listings</div>
       </div>
       <div class="stat">
-        <div class="stat-label">Listings totales</div>
-        <div class="stat-value white">${state.listing_count!=null?state.listing_count.toLocaleString():"—"}</div>
+        <div class="stat-label">Listings SeatGeek</div>
+        <div class="stat-value white">${(state.by_source?.SeatGeek?.listing_count ?? state.listing_count) != null ? Number(state.by_source?.SeatGeek?.listing_count ?? state.listing_count).toLocaleString() : "—"}</div>
         <div class="stat-sub">entradas en reventa</div>
       </div>
       <div class="stat">
