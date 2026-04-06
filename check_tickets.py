@@ -41,10 +41,10 @@ MATCHES = [
         "id":    "argentina-austria",
         "label": "🇦🇷 Argentina vs. 🇦🇹 Austria",
         "date":  "22 jun · AT&T Stadium, Dallas · 1 PM ET",
-        "seatgeek_id": 17196270,
+        "seatgeek_id": 17385144,
         "tickpick_url": "https://www.tickpick.com/buy-world-cup-26-group-j-argentina-vs-austria-match-43-tickets-att-stadium-6-22-26-12pm/6259682/",
         "gametime_url": "https://gametime.co/soccer/fifa-world-cup-argentina-vs-austria-match-43-group-j-tickets/6-22-2026-arlington-tx-att-stadium/events/66ac27f8880867d8fb9ee683",
-        "seatgeek_url": "https://seatgeek.com/fifa-world-cup-tickets/international-soccer/2026-06-22-1-pm/17196270",
+        "seatgeek_url": "https://seatgeek.com/fifa-world-cup-tickets/international-soccer/2026-06-22-12-pm/17385144",
     },
 ]
 
@@ -192,10 +192,21 @@ def fetch_seatgeek(event_id: int) -> dict:
             except Exception:
                 pass  # No fatal, usamos el listing_count de stats
 
+        # SeatGeek a veces mete el precio en performers[0].stats en vez de event.stats
+        min_price = stats.get("lowest_price")
+        avg_price = stats.get("average_price")
+        if not min_price:
+            for p in data.get("performers", []):
+                ps = p.get("stats", {})
+                if ps.get("lowest_price"):
+                    min_price = ps.get("lowest_price")
+                    avg_price = avg_price or ps.get("average_price")
+                    break
+
         return {
             "source":        "SeatGeek",
-            "min_price":     stats.get("lowest_price"),
-            "avg_price":     stats.get("average_price"),
+            "min_price":     min_price,
+            "avg_price":     avg_price,
             "listing_count": listing_count,
             "ok":            True,
         }
