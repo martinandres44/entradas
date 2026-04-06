@@ -261,9 +261,9 @@ function renderMatch(cfg, state){
         <div class="stat-sub">USD · todos los listings</div>
       </div>
       <div class="stat">
-        <div class="stat-label">Listings SeatGeek</div>
-        <div class="stat-value white">${(state.by_source?.SeatGeek?.listing_count ?? state.listing_count) != null ? Number(state.by_source?.SeatGeek?.listing_count ?? state.listing_count).toLocaleString() : "—"}</div>
-        <div class="stat-sub">entradas en reventa</div>
+        <div class="stat-label">Fuentes activas</div>
+        <div class="stat-value white">${Object.values(state.by_source||{}).filter(s=>s.min_price).length || "—"}</div>
+        <div class="stat-sub">de 2 sitios monitoreados</div>
       </div>
       <div class="stat">
         <div class="stat-label">Último chequeo</div>
