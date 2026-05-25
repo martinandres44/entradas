@@ -1,16 +1,10 @@
 {
   "argentina-algeria": {
-    "min_price": 776,
+    "min_price": 795,
     "avg_price": null,
     "listing_count": null,
-    "last_checked": "25/05/2026 16:33 UTC",
+    "last_checked": "25/05/2026 18:16 UTC",
     "history": [
-      {
-        "ts": "21/05/2026 20:00 UTC",
-        "min_price": 740,
-        "avg_price": null,
-        "listing_count": null
-      },
       {
         "ts": "21/05/2026 21:50 UTC",
         "min_price": 727,
@@ -292,17 +286,23 @@
         "min_price": 776,
         "avg_price": null,
         "listing_count": null
+      },
+      {
+        "ts": "25/05/2026 18:16 UTC",
+        "min_price": 795,
+        "avg_price": null,
+        "listing_count": null
       }
     ],
     "by_source": {
       "TickPick": {
-        "min_price": 776,
+        "min_price": 808,
         "listing_count": null,
         "ok": true,
         "error": null
       },
       "Gametime": {
-        "min_price": 786,
+        "min_price": 795,
         "listing_count": null,
         "ok": true,
         "error": null
@@ -310,17 +310,11 @@
     }
   },
   "argentina-austria": {
-    "min_price": 1030,
+    "min_price": 1043,
     "avg_price": null,
     "listing_count": null,
-    "last_checked": "25/05/2026 16:33 UTC",
+    "last_checked": "25/05/2026 18:16 UTC",
     "history": [
-      {
-        "ts": "21/05/2026 20:00 UTC",
-        "min_price": 1057,
-        "avg_price": null,
-        "listing_count": null
-      },
       {
         "ts": "21/05/2026 21:50 UTC",
         "min_price": 1057,
@@ -602,11 +596,17 @@
         "min_price": 1030,
         "avg_price": null,
         "listing_count": null
+      },
+      {
+        "ts": "25/05/2026 18:16 UTC",
+        "min_price": 1043,
+        "avg_price": null,
+        "listing_count": null
       }
     ],
     "by_source": {
       "TickPick": {
-        "min_price": 1030,
+        "min_price": 1043,
         "listing_count": null,
         "ok": true,
         "error": null
