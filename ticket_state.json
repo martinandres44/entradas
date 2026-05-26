@@ -1,16 +1,10 @@
 {
   "argentina-algeria": {
-    "min_price": 803,
+    "min_price": 763,
     "avg_price": null,
     "listing_count": null,
-    "last_checked": "26/05/2026 08:01 UTC",
+    "last_checked": "26/05/2026 14:19 UTC",
     "history": [
-      {
-        "ts": "22/05/2026 13:54 UTC",
-        "min_price": 758,
-        "avg_price": null,
-        "listing_count": null
-      },
       {
         "ts": "22/05/2026 16:29 UTC",
         "min_price": 696,
@@ -292,11 +286,17 @@
         "min_price": 803,
         "avg_price": null,
         "listing_count": null
+      },
+      {
+        "ts": "26/05/2026 14:19 UTC",
+        "min_price": 763,
+        "avg_price": null,
+        "listing_count": null
       }
     ],
     "by_source": {
       "TickPick": {
-        "min_price": 820,
+        "min_price": 763,
         "listing_count": null,
         "ok": true,
         "error": null
@@ -310,17 +310,11 @@
     }
   },
   "argentina-austria": {
-    "min_price": 1000,
+    "min_price": 992,
     "avg_price": null,
     "listing_count": null,
-    "last_checked": "26/05/2026 08:01 UTC",
+    "last_checked": "26/05/2026 14:19 UTC",
     "history": [
-      {
-        "ts": "22/05/2026 13:54 UTC",
-        "min_price": 1057,
-        "avg_price": null,
-        "listing_count": null
-      },
       {
         "ts": "22/05/2026 16:29 UTC",
         "min_price": 1057,
@@ -602,11 +596,17 @@
         "min_price": 1000,
         "avg_price": null,
         "listing_count": null
+      },
+      {
+        "ts": "26/05/2026 14:19 UTC",
+        "min_price": 992,
+        "avg_price": null,
+        "listing_count": null
       }
     ],
     "by_source": {
       "TickPick": {
-        "min_price": 1000,
+        "min_price": 992,
         "listing_count": null,
         "ok": true,
         "error": null
