@@ -3,14 +3,8 @@
     "min_price": 762,
     "avg_price": null,
     "listing_count": null,
-    "last_checked": "04/06/2026 10:25 UTC",
+    "last_checked": "04/06/2026 13:41 UTC",
     "history": [
-      {
-        "ts": "30/05/2026 04:28 UTC",
-        "min_price": 750,
-        "avg_price": null,
-        "listing_count": null
-      },
       {
         "ts": "30/05/2026 07:27 UTC",
         "min_price": 742,
@@ -292,6 +286,12 @@
         "min_price": 762,
         "avg_price": null,
         "listing_count": null
+      },
+      {
+        "ts": "04/06/2026 13:41 UTC",
+        "min_price": 762,
+        "avg_price": null,
+        "listing_count": null
       }
     ],
     "by_source": {
@@ -310,17 +310,11 @@
     }
   },
   "argentina-austria": {
-    "min_price": 1086,
+    "min_price": null,
     "avg_price": null,
     "listing_count": null,
-    "last_checked": "04/06/2026 10:25 UTC",
+    "last_checked": "04/06/2026 13:41 UTC",
     "history": [
-      {
-        "ts": "30/05/2026 04:28 UTC",
-        "min_price": 1056,
-        "avg_price": null,
-        "listing_count": null
-      },
       {
         "ts": "30/05/2026 07:27 UTC",
         "min_price": 1056,
@@ -602,14 +596,20 @@
         "min_price": 1086,
         "avg_price": null,
         "listing_count": null
+      },
+      {
+        "ts": "04/06/2026 13:41 UTC",
+        "min_price": null,
+        "avg_price": null,
+        "listing_count": null
       }
     ],
     "by_source": {
       "TickPick": {
-        "min_price": 1086,
+        "min_price": null,
         "listing_count": null,
-        "ok": true,
-        "error": null
+        "ok": false,
+        "error": "HTTPSConnectionPool(host='www.tickpick.com', port=443): Read timed out. (read ti"
       },
       "Gametime": {
         "min_price": null,
