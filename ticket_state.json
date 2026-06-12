@@ -3,14 +3,8 @@
     "min_price": 798,
     "avg_price": null,
     "listing_count": null,
-    "last_checked": "12/06/2026 02:00 UTC",
+    "last_checked": "12/06/2026 06:55 UTC",
     "history": [
-      {
-        "ts": "06/06/2026 20:13 UTC",
-        "min_price": 851,
-        "avg_price": null,
-        "listing_count": null
-      },
       {
         "ts": "06/06/2026 21:31 UTC",
         "min_price": 829,
@@ -292,6 +286,12 @@
         "min_price": 798,
         "avg_price": null,
         "listing_count": null
+      },
+      {
+        "ts": "12/06/2026 06:55 UTC",
+        "min_price": 798,
+        "avg_price": null,
+        "listing_count": null
       }
     ],
     "by_source": {
@@ -302,7 +302,7 @@
         "error": null
       },
       "Gametime": {
-        "min_price": 851,
+        "min_price": 862,
         "listing_count": null,
         "ok": true,
         "error": null
@@ -313,14 +313,8 @@
     "min_price": 1403,
     "avg_price": null,
     "listing_count": null,
-    "last_checked": "12/06/2026 02:00 UTC",
+    "last_checked": "12/06/2026 06:55 UTC",
     "history": [
-      {
-        "ts": "06/06/2026 20:13 UTC",
-        "min_price": 1141,
-        "avg_price": null,
-        "listing_count": null
-      },
       {
         "ts": "06/06/2026 21:31 UTC",
         "min_price": 1152,
@@ -599,6 +593,12 @@
       },
       {
         "ts": "12/06/2026 02:00 UTC",
+        "min_price": 1403,
+        "avg_price": null,
+        "listing_count": null
+      },
+      {
+        "ts": "12/06/2026 06:55 UTC",
         "min_price": 1403,
         "avg_price": null,
         "listing_count": null
