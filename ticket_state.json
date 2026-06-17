@@ -3,14 +3,8 @@
     "min_price": null,
     "avg_price": null,
     "listing_count": null,
-    "last_checked": "17/06/2026 05:03 UTC",
+    "last_checked": "17/06/2026 10:04 UTC",
     "history": [
-      {
-        "ts": "11/06/2026 16:58 UTC",
-        "min_price": 665,
-        "avg_price": null,
-        "listing_count": null
-      },
       {
         "ts": "11/06/2026 19:39 UTC",
         "min_price": 695,
@@ -292,6 +286,12 @@
         "min_price": null,
         "avg_price": null,
         "listing_count": null
+      },
+      {
+        "ts": "17/06/2026 10:04 UTC",
+        "min_price": null,
+        "avg_price": null,
+        "listing_count": null
       }
     ],
     "by_source": {
@@ -310,17 +310,11 @@
     }
   },
   "argentina-austria": {
-    "min_price": 2197,
+    "min_price": 2080,
     "avg_price": null,
     "listing_count": null,
-    "last_checked": "17/06/2026 05:03 UTC",
+    "last_checked": "17/06/2026 10:04 UTC",
     "history": [
-      {
-        "ts": "11/06/2026 16:58 UTC",
-        "min_price": 1217,
-        "avg_price": null,
-        "listing_count": null
-      },
       {
         "ts": "11/06/2026 19:39 UTC",
         "min_price": 1403,
@@ -602,11 +596,17 @@
         "min_price": 2197,
         "avg_price": null,
         "listing_count": null
+      },
+      {
+        "ts": "17/06/2026 10:04 UTC",
+        "min_price": 2080,
+        "avg_price": null,
+        "listing_count": null
       }
     ],
     "by_source": {
       "TickPick": {
-        "min_price": 2197,
+        "min_price": 2080,
         "listing_count": null,
         "ok": true,
         "error": null
