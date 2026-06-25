@@ -3,14 +3,8 @@
     "min_price": 452,
     "avg_price": null,
     "listing_count": null,
-    "last_checked": "25/06/2026 19:30 UTC",
+    "last_checked": "25/06/2026 21:18 UTC",
     "history": [
-      {
-        "ts": "20/06/2026 17:04 UTC",
-        "min_price": null,
-        "avg_price": null,
-        "listing_count": null
-      },
       {
         "ts": "20/06/2026 18:46 UTC",
         "min_price": null,
@@ -292,14 +286,20 @@
         "min_price": 452,
         "avg_price": null,
         "listing_count": null
+      },
+      {
+        "ts": "25/06/2026 21:18 UTC",
+        "min_price": 452,
+        "avg_price": null,
+        "listing_count": null
       }
     ],
     "by_source": {
       "TickPick": {
         "min_price": null,
         "listing_count": null,
-        "ok": false,
-        "error": "HTTPSConnectionPool(host='www.tickpick.com', port=443): Read timed out. (read ti"
+        "ok": true,
+        "error": null
       },
       "Gametime": {
         "min_price": 452,
@@ -313,14 +313,8 @@
     "min_price": null,
     "avg_price": null,
     "listing_count": null,
-    "last_checked": "25/06/2026 19:30 UTC",
+    "last_checked": "25/06/2026 21:18 UTC",
     "history": [
-      {
-        "ts": "20/06/2026 17:04 UTC",
-        "min_price": 2355,
-        "avg_price": null,
-        "listing_count": null
-      },
       {
         "ts": "20/06/2026 18:46 UTC",
         "min_price": 2355,
@@ -599,6 +593,12 @@
       },
       {
         "ts": "25/06/2026 19:30 UTC",
+        "min_price": null,
+        "avg_price": null,
+        "listing_count": null
+      },
+      {
+        "ts": "25/06/2026 21:18 UTC",
         "min_price": null,
         "avg_price": null,
         "listing_count": null
