@@ -1,16 +1,10 @@
 {
   "argentina-algeria": {
-    "min_price": 353,
+    "min_price": 346,
     "avg_price": null,
     "listing_count": null,
-    "last_checked": "30/06/2026 12:24 UTC",
+    "last_checked": "30/06/2026 15:12 UTC",
     "history": [
-      {
-        "ts": "26/06/2026 04:50 UTC",
-        "min_price": 431,
-        "avg_price": null,
-        "listing_count": null
-      },
       {
         "ts": "26/06/2026 08:32 UTC",
         "min_price": 454,
@@ -292,17 +286,23 @@
         "min_price": 353,
         "avg_price": null,
         "listing_count": null
+      },
+      {
+        "ts": "30/06/2026 15:12 UTC",
+        "min_price": 346,
+        "avg_price": null,
+        "listing_count": null
       }
     ],
     "by_source": {
       "TickPick": {
         "min_price": null,
         "listing_count": null,
-        "ok": false,
-        "error": "HTTPSConnectionPool(host='www.tickpick.com', port=443): Read timed out. (read ti"
+        "ok": true,
+        "error": null
       },
       "Gametime": {
-        "min_price": 353,
+        "min_price": 346,
         "listing_count": null,
         "ok": true,
         "error": null
@@ -313,14 +313,8 @@
     "min_price": null,
     "avg_price": null,
     "listing_count": null,
-    "last_checked": "30/06/2026 12:24 UTC",
+    "last_checked": "30/06/2026 15:12 UTC",
     "history": [
-      {
-        "ts": "26/06/2026 04:50 UTC",
-        "min_price": null,
-        "avg_price": null,
-        "listing_count": null
-      },
       {
         "ts": "26/06/2026 08:32 UTC",
         "min_price": null,
@@ -599,6 +593,12 @@
       },
       {
         "ts": "30/06/2026 12:24 UTC",
+        "min_price": null,
+        "avg_price": null,
+        "listing_count": null
+      },
+      {
+        "ts": "30/06/2026 15:12 UTC",
         "min_price": null,
         "avg_price": null,
         "listing_count": null
