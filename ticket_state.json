@@ -1,16 +1,10 @@
 {
   "argentina-algeria": {
-    "min_price": 595,
+    "min_price": 594,
     "avg_price": null,
     "listing_count": null,
-    "last_checked": "06/07/2026 06:02 UTC",
+    "last_checked": "06/07/2026 11:04 UTC",
     "history": [
-      {
-        "ts": "02/07/2026 13:00 UTC",
-        "min_price": 320,
-        "avg_price": null,
-        "listing_count": null
-      },
       {
         "ts": "02/07/2026 15:31 UTC",
         "min_price": 293,
@@ -292,17 +286,23 @@
         "min_price": 595,
         "avg_price": null,
         "listing_count": null
+      },
+      {
+        "ts": "06/07/2026 11:04 UTC",
+        "min_price": 594,
+        "avg_price": null,
+        "listing_count": null
       }
     ],
     "by_source": {
       "TickPick": {
         "min_price": null,
         "listing_count": null,
-        "ok": false,
-        "error": "HTTPSConnectionPool(host='www.tickpick.com', port=443): Read timed out. (read ti"
+        "ok": true,
+        "error": null
       },
       "Gametime": {
-        "min_price": 595,
+        "min_price": 594,
         "listing_count": null,
         "ok": true,
         "error": null
@@ -313,14 +313,8 @@
     "min_price": null,
     "avg_price": null,
     "listing_count": null,
-    "last_checked": "06/07/2026 06:02 UTC",
+    "last_checked": "06/07/2026 11:04 UTC",
     "history": [
-      {
-        "ts": "02/07/2026 13:00 UTC",
-        "min_price": null,
-        "avg_price": null,
-        "listing_count": null
-      },
       {
         "ts": "02/07/2026 15:31 UTC",
         "min_price": null,
@@ -602,14 +596,20 @@
         "min_price": null,
         "avg_price": null,
         "listing_count": null
+      },
+      {
+        "ts": "06/07/2026 11:04 UTC",
+        "min_price": null,
+        "avg_price": null,
+        "listing_count": null
       }
     ],
     "by_source": {
       "TickPick": {
         "min_price": null,
         "listing_count": null,
-        "ok": false,
-        "error": "HTTPSConnectionPool(host='www.tickpick.com', port=443): Read timed out. (read ti"
+        "ok": true,
+        "error": null
       },
       "Gametime": {
         "min_price": null,
