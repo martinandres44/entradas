@@ -3,14 +3,8 @@
     "min_price": 1434,
     "avg_price": null,
     "listing_count": null,
-    "last_checked": "12/07/2026 21:58 UTC",
+    "last_checked": "12/07/2026 22:59 UTC",
     "history": [
-      {
-        "ts": "09/07/2026 14:06 UTC",
-        "min_price": 976,
-        "avg_price": null,
-        "listing_count": null
-      },
       {
         "ts": "09/07/2026 16:42 UTC",
         "min_price": 969,
@@ -292,6 +286,12 @@
         "min_price": 1434,
         "avg_price": null,
         "listing_count": null
+      },
+      {
+        "ts": "12/07/2026 22:59 UTC",
+        "min_price": 1434,
+        "avg_price": null,
+        "listing_count": null
       }
     ],
     "by_source": {
@@ -313,14 +313,8 @@
     "min_price": null,
     "avg_price": null,
     "listing_count": null,
-    "last_checked": "12/07/2026 21:58 UTC",
+    "last_checked": "12/07/2026 22:59 UTC",
     "history": [
-      {
-        "ts": "09/07/2026 14:06 UTC",
-        "min_price": null,
-        "avg_price": null,
-        "listing_count": null
-      },
       {
         "ts": "09/07/2026 16:42 UTC",
         "min_price": null,
@@ -599,6 +593,12 @@
       },
       {
         "ts": "12/07/2026 21:58 UTC",
+        "min_price": null,
+        "avg_price": null,
+        "listing_count": null
+      },
+      {
+        "ts": "12/07/2026 22:59 UTC",
         "min_price": null,
         "avg_price": null,
         "listing_count": null
