@@ -3,14 +3,8 @@
     "min_price": null,
     "avg_price": null,
     "listing_count": null,
-    "last_checked": "25/08/2026 05:35 UTC",
+    "last_checked": "25/08/2026 06:04 UTC",
     "history": [
-      {
-        "ts": "23/08/2026 17:35 UTC",
-        "min_price": null,
-        "avg_price": null,
-        "listing_count": null
-      },
       {
         "ts": "23/08/2026 17:57 UTC",
         "min_price": null,
@@ -292,14 +286,20 @@
         "min_price": null,
         "avg_price": null,
         "listing_count": null
+      },
+      {
+        "ts": "25/08/2026 06:04 UTC",
+        "min_price": null,
+        "avg_price": null,
+        "listing_count": null
       }
     ],
     "by_source": {
       "TickPick": {
         "min_price": null,
         "listing_count": null,
-        "ok": true,
-        "error": null
+        "ok": false,
+        "error": "HTTPSConnectionPool(host='www.tickpick.com', port=443): Read timed out. (read ti"
       },
       "Gametime": {
         "min_price": null,
@@ -313,14 +313,8 @@
     "min_price": null,
     "avg_price": null,
     "listing_count": null,
-    "last_checked": "25/08/2026 05:35 UTC",
+    "last_checked": "25/08/2026 06:04 UTC",
     "history": [
-      {
-        "ts": "23/08/2026 17:35 UTC",
-        "min_price": null,
-        "avg_price": null,
-        "listing_count": null
-      },
       {
         "ts": "23/08/2026 17:57 UTC",
         "min_price": null,
@@ -602,14 +596,20 @@
         "min_price": null,
         "avg_price": null,
         "listing_count": null
+      },
+      {
+        "ts": "25/08/2026 06:04 UTC",
+        "min_price": null,
+        "avg_price": null,
+        "listing_count": null
       }
     ],
     "by_source": {
       "TickPick": {
         "min_price": null,
         "listing_count": null,
-        "ok": true,
-        "error": null
+        "ok": false,
+        "error": "HTTPSConnectionPool(host='www.tickpick.com', port=443): Read timed out. (read ti"
       },
       "Gametime": {
         "min_price": null,
