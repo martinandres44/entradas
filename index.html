@@ -691,7 +691,7 @@
       { contains: 'FLASHPASS', cat: 'Entretenimiento' },
       { contains: 'SAN ANDRES', cat: 'Educación' },
       { contains: 'CODERHOUSE', cat: 'Educación' },
-      { USE_CASE: 'GEBA', contains: 'GEBA', cat: 'Deporte/Club' },
+      { contains: 'GEBA', cat: 'Deporte/Club' },
       { contains: 'VELEZ SARSFIELD', cat: 'Deporte/Club' },
       { contains: 'BELGRANO ATHLETIC', cat: 'Deporte/Club' },
       { contains: 'SPORTCLUB', cat: 'Deporte/Club' },
@@ -970,8 +970,14 @@
       let totalFijoARS = 0;
       let totalFijoUSD = 0;
 
-      detected.forEach(d => {
-        if (!selectedPersona && (d.personaNombre === 'Anita' || d.personaNombre === 'Mamá')) return;
+      const recurrentesFiltered = detected.filter(d => {
+        if (selectedPersona) return d.personaNombre === selectedPersona;
+        // Por defecto en "Todas", excluir Anita y Mamá del total consolidado fijo
+        if (d.personaNombre === 'Anita' || d.personaNombre === 'Mamá') return false;
+        return true;
+      });
+
+      recurrentesFiltered.forEach(d => {
         totalFijoARS += d.debitoCalculado;
         totalFijoUSD += d.usdCalculado;
       });
@@ -980,7 +986,7 @@
       document.getElementById('kpiRecurrentesUSD').textContent = fmtUSD(totalFijoUSD);
       document.getElementById('kpiRecurrentesCount').textContent = `${detected.length} servicios`;
 
-      tbody.innerHTML = detected.map(d => `
+      tbody.innerHTML = recurrentesFiltered.map(d => `
         <tr class="hover:bg-slate-700/40 transition">
           <td class="py-2.5 px-3 font-medium text-slate-100 flex items-center gap-2">
             <i class="fa-solid fa-repeat text-indigo-400 text-xs"></i>
@@ -1003,6 +1009,7 @@
       const budgets = loadBudgets();
       const filtered = getFilteredData();
 
+      // Calcular consumo real de las categorías en el mes seleccionado
       const spentMap = {};
       filtered.forEach(d => {
         const isExcluded = (!selectedPersona && (d.personaNombre === 'Anita' || d.personaNombre === 'Mamá'));
@@ -1431,19 +1438,19 @@
         const icon = isMC ? 'fa-brands fa-cc-mastercard text-amber-400' : isAmex ? 'fa-brands fa-cc-amex text-emerald-400' : isCuenta ? 'fa-solid fa-building-columns text-cyan-400' : 'fa-brands fa-cc-visa text-blue-400';
 
         return `
-          <div onclick="setCardDirect('${cName}')" class="bg-slate-800/70 hover:bg-slate-800 border ${border} rounded-2xl p-3.5 shadow-sm cursor-pointer transition">
-            <div class="flex justify-between items-center">
-              <div class="flex items-center gap-2 flex-wrap">
-                <span class="text-[10px] font-bold px-2 py-0.5 rounded-md ${tag} uppercase tracking-wider">${cName}</span>
-                ${vto ? `<span class="text-[10px] font-mono text-slate-400">Vto: <b class="text-slate-200">${vto}</b></span>` : ''}
+          <div onclick="setCardDirect('${cName}')" class="bg-slate-800/60 hover:bg-slate-800 border ${border} rounded-xl p-2.5 shadow-sm cursor-pointer transition">
+            <div class="flex justify-between items-start">
+              <div>
+                <span class="text-[9px] font-bold px-1.5 py-0.5 rounded ${tag} uppercase truncate max-w-[130px] inline-block">${cName}</span>
+                ${vto ? `<p class="text-[9px] font-mono text-slate-400 mt-0.5">Vto: <b class="text-slate-300">${vto}</b></p>` : ''}
               </div>
-              <div class="flex items-center gap-1.5">
-                ${isSelected ? '<span class="text-[9px] text-emerald-400 font-bold bg-emerald-500/10 px-1.5 py-0.5 rounded border border-emerald-500/20">✓ Activa</span>' : ''}
-                <i class="${icon} text-xl"></i>
+              <div class="text-right">
+                <i class="${icon} text-lg"></i>
+                ${isSelected ? '<span class="block text-[8px] text-emerald-400 font-bold">✓ Activa</span>' : ''}
               </div>
             </div>
-            <p class="text-lg sm:text-xl font-bold text-slate-100 mt-2">${fmtP(val.ars)}</p>
-            <p class="text-xs ${val.usd !== 0 ? 'text-cyan-400 font-semibold' : 'text-slate-400'} mt-0.5">
+            <p class="text-sm font-bold text-slate-100 mt-1">${fmtP(val.ars)}</p>
+            <p class="text-[11px] ${val.usd !== 0 ? 'text-cyan-400 font-semibold' : 'text-slate-400'}">
               ${val.usd !== 0 ? fmtUSD(val.usd) : 'USD 0,00'}
             </p>
           </div>
