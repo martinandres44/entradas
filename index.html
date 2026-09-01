@@ -202,7 +202,7 @@
 
     </section>
 
-    <!-- Navegación by Tabs de Contenido (Detalle vs Cuotas vs Fijos vs Presupuestos vs Gráficos) -->
+    <!-- Navegación por Tabs de Contenido (Detalle vs Cuotas vs Fijos vs Presupuestos vs Gráficos) -->
     <div class="flex items-center border-b border-slate-700 gap-4 sm:gap-6 text-xs sm:text-sm font-semibold px-2 overflow-x-auto">
       <button onclick="switchMainTab('detalle')" id="tabNavDetalle" class="tab-nav-btn active pb-3 flex items-center gap-1.5 whitespace-nowrap">
         <i class="fa-solid fa-list-ul text-emerald-400"></i> Movimientos
@@ -420,7 +420,7 @@
       </div>
     </section>
 
-    <!-- TAB 5: GRÁFICOS & TENDENCIAS -->
+    <!-- TAB 5: GRÁFICOS & TENDENCIAS (CON SECCIÓN CATEGORÍAS Y TENDENCIA AL FINAL) -->
     <section id="tabContentGraficos" class="hidden space-y-6">
       
       <!-- 1. Donut & Bar Charts for Top Categories -->
@@ -450,14 +450,14 @@
         </div>
       </div>
 
-      <!-- 2. Sección Categorías (Cajitas con Total del Mes, Variación en $ y Comparativa Mes Pasado / MoM) -->
+      <!-- 2. Sección Categorías (Cajitas con Total del Mes y Comparativa Mes Pasado / MoM) -->
       <div class="bg-slate-800 border border-slate-700 rounded-2xl p-5 space-y-4 shadow-sm">
         <div class="flex justify-between items-center border-b border-slate-700/60 pb-3">
           <div>
             <h2 class="text-base font-bold text-slate-100 flex items-center gap-2">
               <i class="fa-solid fa-tags text-emerald-400"></i> Categorías — Totales y Comparativa Mes Pasado (MoM)
             </h2>
-            <p class="text-xs text-slate-400">Gasto actual del período vs. mes anterior (en pesos y %)</p>
+            <p class="text-xs text-slate-400">Gasto actual del período vs. mes anterior</p>
           </div>
         </div>
 
@@ -541,7 +541,7 @@
           <h2 class="text-base font-bold text-slate-100 flex items-center gap-2">
             <i class="fa-solid fa-gear text-emerald-400"></i> Categorías & Reglas Automáticas
           </h2>
-          <p class="text-xs text-slate-400">Reglas para clasificar automáticamente tus consumos</p>
+          <p class="text-xs text-slate-400">Reglas pre-cargadas de tu Sheet para clasificar automáticamente</p>
         </div>
         <button onclick="closeRulesModal()" class="text-slate-400 hover:text-white text-lg p-1"><i class="fa-solid fa-xmark"></i></button>
       </div>
@@ -555,7 +555,7 @@
         <div id="panelRules" class="space-y-3">
           <div class="p-3 bg-slate-900/80 rounded-xl border border-slate-700 text-slate-300 text-[11px] mb-2 flex items-start gap-2">
             <i class="fa-solid fa-wand-magic-sparkles text-cyan-400 mt-0.5"></i>
-            <span>Si la descripción contiene el texto → se asigna la categoría correspondiente. Las reglas se guardan en la nube para sincronizarse en todos tus dispositivos.</span>
+            <span>Si la descripción contiene el texto → se asigna la categoría correspondiente.</span>
           </div>
           <div style="display:grid;grid-template-columns:1fr 140px 32px;gap:8px;margin-bottom:4px;padding:0 4px;">
             <span class="text-[10px] font-bold text-slate-400 uppercase">Texto a Buscar</span>
@@ -584,7 +584,7 @@
 
       <div class="p-4 border-t border-slate-700 flex justify-end gap-2 bg-slate-900/50">
         <button onclick="closeRulesModal()" class="px-4 py-2 rounded-lg bg-slate-700 hover:bg-slate-600 text-slate-300 text-xs font-semibold transition">Cancelar</button>
-        <button onclick="saveAllRulesAndCats()" class="px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition">✓ Guardar y Sincronizar en la Nube</button>
+        <button onclick="saveAllRulesAndCats()" class="px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition">✓ Guardar y Aplicar</button>
       </div>
     </div>
   </div>
@@ -671,7 +671,7 @@
   <script>
     const API_URL = 'https://script.google.com/macros/s/AKfycbwMQ_RmqaJw5hLhSU7XsicAwqnQZRRjgAS7eC3AOq84ipC7tLDzWQLQ5OM5vvPmSNAsow/exec';
 
-    let REMOTE_RULES = [];
+    const RULES_KEY = 'gastos_cat_rules';
     const CUSTOM_CATS_KEY = 'gastos_custom_cats';
     const BUDGETS_KEY = 'gastos_budgets_app';
 
@@ -778,33 +778,24 @@
     }
 
     function loadRules() {
-      if (REMOTE_RULES && Array.isArray(REMOTE_RULES) && REMOTE_RULES.length > 0) return REMOTE_RULES;
-      return DEFAULT_PRELOADED_RULES;
-    }
-
-    async function saveRulesToCloud(rules) {
       try {
-        await fetch(`${API_URL}?action=saveRules&rules=${encodeURIComponent(JSON.stringify(rules))}`);
-        REMOTE_RULES = rules;
+        const saved = JSON.parse(localStorage.getItem(RULES_KEY));
+        if (saved && Array.isArray(saved) && saved.length > 0) return saved;
+        return DEFAULT_PRELOADED_RULES;
       } catch (e) {
-        console.warn("Error guardando reglas en la nube:", e);
+        return DEFAULT_PRELOADED_RULES;
       }
+    }
+    function saveRulesToStorage(rules) {
+      localStorage.setItem(RULES_KEY, JSON.stringify(rules));
     }
 
     function applyRules(d) {
       const desc = String(d.descripcion || '').toUpperCase();
       const userRules = loadRules();
-      
-      // 1. Primero evaluamos las reglas personalizadas (remotas/usuario) para darles prioridad
       for (const r of userRules) {
         if (r.contains && desc.includes(r.contains.toUpperCase())) return r.cat;
       }
-      
-      // 2. Luego evaluamos las por defecto
-      for (const r of DEFAULT_PRELOADED_RULES) {
-        if (r.contains && desc.includes(r.contains.toUpperCase())) return r.cat;
-      }
-      
       return null;
     }
 
@@ -818,7 +809,7 @@
       if (u === 'MAMA' || u === 'MAMÁ' || u === 'SARA' || u.includes('MAMA') || u.includes('MAMÁ')) return 'Mamá';
       if (u === 'PILI' || u === 'PILAR' || u.includes('PILI') || u.includes('PILAR') || u.includes('MARIA DEL')) return 'Pili';
       if (u === 'TOMY' || u === 'TOMAS' || u === 'TOMÁS' || u.includes('TOMY') || u.includes('TOMAS')) return 'Tomy';
-      if (u === 'FLOR' || u.includes('FLOR' ) || u.includes('YORIO') || u.includes('FLORENC')) return 'Flor';
+      if (u === 'FLOR' || u.includes('FLOR') || u.includes('YORIO') || u.includes('FLORENC')) return 'Flor';
       if (u === 'MARTIN' || u === 'MARTÍN' || u.includes('MARTIN') || u.includes('MARTÍN')) return 'Martín';
       
       return 'Martín';
@@ -928,61 +919,62 @@
         const json = await resp.json();
         if (!json.ok) throw new Error(json.error || 'Error al conectar');
         
-        if (json.rules && Array.isArray(json.rules)) {
-          REMOTE_RULES = json.rules;
-        }
-
-        const cardsRaw = json.cards || [];
-        const bankRaw = json.bank || [];
-
-        const processedCards = cardsRaw.map(d => {
+        DATA = [...(json.cards || []), ...(json.bank || [])].map((d, index) => {
           const rawPerson = d.persona || 'MARTIN ANDRES';
           const pClean = normalizarPersona(rawPerson);
-          const finalCat = applyRules(d) || d.categoria || 'Sin categoría';
-          const deb = d.debito || 0;
-          const cred = d.credito || 0;
-          const p = Number(d.pesos || 0);
-          let debCalc = deb, credCalc = cred;
-          if (deb === 0 && cred === 0) {
-            if (p < 0) { credCalc = Math.abs(p); } else { debCalc = p; }
+          const isBank = d.source === 'banco';
+
+          let debitoVal = 0;
+          let creditoVal = 0;
+
+          if (isBank) {
+            debitoVal = Number(d.debito || d.DEBITO || d[Object.keys(d).find(k => k && k.toString().toLowerCase().includes('debito'))] || 0);
+            // Columna F es Crédito (índice 5 o d.credito / d.CREDITO / d['Crédito'])
+            const rawCred = d.credito !== undefined ? d.credito : (d.CREDITO !== undefined ? d.CREDITO : (d[Object.keys(d).find(k => k && k.toString().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").includes('credito'))] || (Array.isArray(d) ? d[5] : 0)));
+            creditoVal = Number(rawCred || 0);
+          } else {
+            creditoVal = Number(d.credito || 0);
+            const p = Number(d.pesos || 0);
+            if (p < 0) {
+              creditoVal = Math.abs(p);
+            } else {
+              debitoVal = p;
+            }
           }
+
+          const ruleCat = applyRules(d);
+          const finalCat = ruleCat || d.categoria || 'Sin categoría';
+
+          const rawUsd = d.usd !== undefined ? d.usd : (d.USD !== undefined ? d.USD : (d[Object.keys(d).find(k => k.toLowerCase() === 'usd')] || 0));
+          let usdVal = 0;
+          if (typeof rawUsd === 'number') {
+            usdVal = rawUsd;
+          } else if (rawUsd) {
+            let s = String(rawUsd).trim().replace('$', '').replace(/USD/gi, '').replace(/U\$S/gi, '').replace(/\s/g, '');
+            if (s.includes(',') && s.includes('.')) {
+              if (s.lastIndexOf(',') > s.lastIndexOf('.')) s = s.replace(/\./g, '').replace(',', '.');
+              else s = s.replace(/,/g, '');
+            } else if (s.includes(',')) {
+              s = s.replace(',', '.');
+            }
+            usdVal = parseFloat(s) || 0;
+          }
+
           return {
             ...d,
-            rowId: d.row,
-            source: 'tarjeta',
+            rowId: d.row || (index + 1),
+            source: d.source || 'tarjeta',
             rawPersona: rawPerson,
             personaNombre: pClean,
             categoria: finalCat,
-            debitoCalculado: debCalc,
-            creditoCalculado: credCalc,
-            usdCalculado: Number(d.usd || 0),
+            debitoCalculado: debitoVal,
+            creditoCalculado: creditoVal,
+            usdCalculado: usdVal,
             mesFmt: fmtMes(d.mes_resumen),
-            tarjetaClean: d.tarjeta || 'Tarjeta'
+            tarjetaClean: d.tarjeta || (isBank ? 'Cta. Bancaria' : 'Tarjeta')
           };
         });
 
-        const processedBank = bankRaw.map(d => {
-          const rawPerson = d.persona || 'MARTIN ANDRES';
-          const pClean = normalizarPersona(rawPerson);
-          const finalCat = applyRules(d) || d.categoria || 'Sin categoría';
-          const deb = Number(d.debito || d.pesos || 0);
-          const cred = Number(d.credito || 0);
-          return {
-            ...d,
-            rowId: d.row,
-            source: 'banco',
-            rawPersona: rawPerson,
-            personaNombre: pClean,
-            categoria: finalCat,
-            debitoCalculado: Math.abs(deb),
-            creditoCalculado: Math.abs(cred),
-            usdCalculado: Number(d.usd || 0),
-            mesFmt: fmtMes(d.mes_resumen),
-            tarjetaClean: d.tarjeta || 'Cta. Bancaria'
-          };
-        });
-
-        DATA = [...processedCards, ...processedBank];
         ALL_CATEGORIES = [...new Set([...(json.cats || []), ...DATA.map(d => d.categoria).filter(Boolean)])].sort();
         
         status.textContent = `Conectado · ${DATA.length} filas online`;
@@ -1045,7 +1037,7 @@
 
       const recurrentesFiltered = detected.filter(d => {
         if (selectedPersona) return d.personaNombre === selectedPersona;
-        if (d.personaNombre === 'Anita' || d.personaNombre === 'Mamá') return false;
+        if (d.personaNombre === 'Anita') return false;
         return true;
       });
 
@@ -1082,7 +1074,7 @@
 
       const spentMap = {};
       filtered.forEach(d => {
-        const isExcluded = (!selectedPersona && (d.personaNombre === 'Anita' || d.personaNombre === 'Mamá'));
+        const isExcluded = (!selectedPersona && (d.personaNombre === 'Anita'));
         if (!isExcluded) {
           const p = d.debitoCalculado - d.creditoCalculado;
           if (p > 0 && d.categoria) {
@@ -1427,7 +1419,7 @@
       const cardMap = {};
 
       filtered.forEach(d => {
-        const isExcluded = (!selectedPersona && (d.personaNombre === 'Anita' || d.personaNombre === 'Mamá'));
+        const isExcluded = (!selectedPersona && (d.personaNombre === 'Anita'));
         
         const deb = d.debitoCalculado;
         const cred = d.creditoCalculado;
@@ -1589,7 +1581,7 @@
       const cuotaTransactions = DATA.filter(d => {
         if (!d.cuota || !/\d+\/\d+/.test(d.cuota)) return false;
         if (!selectedMonths.length || selectedMonths.includes(d.mesFmt) || d.mesFmt === 'Ago-26') {
-          if (!selectedPersona && (d.personaNombre === 'Anita' || d.personaNombre === 'Mamá')) return false;
+          if (!selectedPersona && (d.personaNombre === 'Anita')) return false;
           if (selectedPersona && d.personaNombre !== selectedPersona) return false;
           return true;
         }
@@ -1632,7 +1624,7 @@
 
       const sourceData = DATA.filter(d => {
         if (selectedPersona && d.personaNombre !== selectedPersona) return false;
-        if (!selectedPersona && (d.personaNombre === 'Anita' || d.personaNombre === 'Mamá')) return false;
+        if (!selectedPersona && (d.personaNombre === 'Anita')) return false;
         if (selectedCard && d.tarjetaClean !== selectedCard) return false;
         return true;
       });
@@ -1709,9 +1701,9 @@
       let totalGastadoCategorias = 0;
 
       filtered.forEach(d => {
-        const isExcluded = (!selectedPersona && (d.personaNombre === 'Anita' || d.personaNombre === 'Mamá'));
+        const isExcluded = (!selectedPersona && (d.personaNombre === 'Anita'));
         if (!isExcluded) {
-          const p = d.debitoCalculado - d.creditoCalculado;
+          const p = (d.debitoCalculado - d.creditoCalculado);
           if (p > 0) {
             const c = d.categoria || 'Sin categoría';
             catTotals[c] = (catTotals[c] || 0) + p;
@@ -1797,6 +1789,8 @@
         }
       });
 
+      // Calcular MoM (Mes Pasado vs Mes Actual) para cada categoría del Top 10
+      // Obtener el mes actual seleccionado o el último mes si hay varios
       const allMonthsSorted = [...new Set(DATA.map(d => d.mesFmt).filter(Boolean))].sort((a, b) => {
         const [ma, ya] = a.split('-'), [mb, yb] = b.split('-');
         return (parseInt(ya) - parseInt(yb)) || (MONTHS_ES.indexOf(ma) - MONTHS_ES.indexOf(mb));
@@ -1809,7 +1803,7 @@
       if (prevMonth) {
         DATA.forEach(d => {
           if (d.mesFmt === prevMonth) {
-            const isExcluded = (!selectedPersona && (d.personaNombre === 'Anita' || d.personaNombre === 'Mamá'));
+            const isExcluded = (!selectedPersona && (d.personaNombre === 'Anita'));
             if (!isExcluded) {
               const p = d.debitoCalculado - d.creditoCalculado;
               if (p > 0 && d.categoria) {
@@ -1862,7 +1856,7 @@
       const memberTotals = { 'Martín': 0, 'Flor': 0, 'Pili': 0, 'Tomy': 0, 'Bauti': 0, 'Anita': 0, 'Mamá': 0 };
 
       filtered.forEach(d => {
-        const p = d.debitoCalculado - d.creditoCalculado;
+        const p = (d.debitoCalculado - d.creditoCalculado);
         if (p > 0 && memberTotals.hasOwnProperty(d.personaNombre)) {
           memberTotals[d.personaNombre] += p;
         }
@@ -2010,6 +2004,7 @@
 
     function renderCatChips() {
       const container = document.getElementById('catChips');
+      const custom = loadCustomCats();
       const all = getAllCats();
       container.innerHTML = all.map(c => {
         const isBase = BASE_CATS.includes(c);
@@ -2078,9 +2073,8 @@
       })).filter(r => r.contains && r.cat);
     }
 
-    async function saveAllRulesAndCats() {
-      const newRules = getRulesFromUI();
-      await saveRulesToCloud(newRules);
+    function saveAllRulesAndCats() {
+      saveRulesToStorage(getRulesFromUI());
       closeRulesModal();
       DATA.forEach(d => {
         const ruleCat = applyRules(d);
@@ -2090,7 +2084,7 @@
       initTrendPills();
       updateDashboard();
       const status = document.getElementById('sheetStatus');
-      status.textContent = `✓ Reglas guardadas en la nube`;
+      status.textContent = `✓ Reglas aplicadas`;
       setTimeout(() => { status.textContent = `Conectado · ${DATA.length} filas`; }, 2500);
     }
 
