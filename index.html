@@ -179,7 +179,7 @@
         </div>
       </div>
 
-      <!-- Fila 2: Personas (6 Personas Oficiales del Sheet) -->
+      <!-- Fila 2: Personas (7 Personas Oficiales del Sheet) -->
       <div class="pt-3 border-t border-slate-700/60">
         <div class="flex items-center gap-2 mb-2">
           <span class="text-xs font-bold uppercase tracking-wider text-slate-400"><i class="fa-solid fa-user-group text-emerald-400 mr-1"></i> Persona:</span>
@@ -342,7 +342,7 @@
 
     </section>
 
-    <!-- TAB 3: RECURRENTES & SUSCRIPCIONES (NUEVO) -->
+    <!-- TAB 3: RECURRENTES & SUSCRIPCIONES -->
     <section id="tabContentRecurrentes" class="hidden space-y-6">
       <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <div class="bg-slate-800 border border-indigo-500/30 rounded-2xl p-4 shadow-sm">
@@ -363,12 +363,19 @@
       </div>
 
       <div class="bg-slate-800 border border-slate-700 rounded-2xl p-5 space-y-4 shadow-sm">
-        <div class="flex justify-between items-center border-b border-slate-700/60 pb-3">
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 border-b border-slate-700/60 pb-3">
           <div>
             <h2 class="text-base font-bold text-slate-100 flex items-center gap-2">
               <i class="fa-solid fa-repeat text-indigo-400"></i> Radar de Suscripciones y Gastos Fijos
             </h2>
             <p class="text-xs text-slate-400">Detección automática de cargos recurrentes periódicos</p>
+          </div>
+          <div class="flex items-center gap-2">
+            <label class="text-xs font-semibold text-slate-400 whitespace-nowrap">Ordenar por Monto:</label>
+            <select id="sortRecurrentesSelect" onchange="renderRecurrentesTab()" class="bg-slate-900 border border-slate-700 text-xs text-slate-200 rounded-lg px-3 py-1.5 focus:outline-none focus:border-indigo-500">
+              <option value="desc">Mayor a Menor ($)</option>
+              <option value="asc">Menor a Mayor ($)</option>
+            </select>
           </div>
         </div>
 
@@ -380,7 +387,7 @@
                 <th class="py-3 px-3">Categoría</th>
                 <th class="py-3 px-3">Titular</th>
                 <th class="py-3 px-3">Medio de Pago</th>
-                <th class="py-3 px-3 text-right">Importe ARS</th>
+                <th class="py-3 px-3 text-right cursor-pointer" onclick="toggleRecurrentesSort()">Importe ARS <i class="fa-solid fa-sort ml-1"></i></th>
                 <th class="py-3 px-3 text-right">Importe USD</th>
               </tr>
             </thead>
@@ -392,7 +399,7 @@
       </div>
     </section>
 
-    <!-- TAB 4: PRESUPUESTOS Y ALERTAS (NUEVO) -->
+    <!-- TAB 4: PRESUPUESTOS Y ALERTAS -->
     <section id="tabContentPresupuestos" class="hidden space-y-6">
       <div class="bg-slate-800 border border-slate-700 rounded-2xl p-5 space-y-4 shadow-sm">
         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 border-b border-slate-700/60 pb-3">
@@ -413,38 +420,10 @@
       </div>
     </section>
 
-    <!-- TAB 5: GRÁFICOS & TENDENCIAS -->
+    <!-- TAB 5: GRÁFICOS & TENDENCIAS (CON SECCIÓN CATEGORÍAS Y TENDENCIA AL FINAL) -->
     <section id="tabContentGraficos" class="hidden space-y-6">
-      <!-- Gráfico de Tendencia Histórica con Selector Interactivo -->
-      <div class="bg-slate-800 border border-slate-700 rounded-2xl p-5 shadow-sm space-y-4">
-        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 border-b border-slate-700/60 pb-3">
-          <div>
-            <h2 class="text-base font-bold text-slate-100 flex items-center gap-2">
-              <i class="fa-solid fa-chart-line text-emerald-400"></i> Tendencia de Gastos en el Tiempo (ARS)
-            </h2>
-            <p class="text-xs text-slate-400">Seleccioná o quitá las categorías que quieras comparar en la curva histórica</p>
-          </div>
-          
-          <div class="flex items-center gap-2">
-            <button onclick="toggleAllTrendCats(true)" class="text-[11px] font-semibold text-emerald-400 hover:text-emerald-300 bg-slate-900 border border-slate-700 px-2.5 py-1 rounded-lg transition">Todas Top 5</button>
-            <button onclick="toggleAllTrendCats(false)" class="text-[11px] font-semibold text-slate-400 hover:text-slate-200 bg-slate-900 border border-slate-700 px-2.5 py-1 rounded-lg transition">Limpiar</button>
-          </div>
-        </div>
-
-        <!-- Píldoras interactivas para agregar/quitar categorías -->
-        <div>
-          <div class="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-1.5">Poner / Sacar Categorías en la curva:</div>
-          <div class="flex flex-wrap gap-1.5 max-h-28 overflow-y-auto pr-1" id="trendCatPillsContainer">
-            <!-- Populated dynamically -->
-          </div>
-        </div>
-
-        <div class="h-80 relative pt-2">
-          <canvas id="trendChartCanvas"></canvas>
-        </div>
-      </div>
-
-      <!-- Otros Gráficos: Torta Top 10 con Porcentajes y Barras por Persona -->
+      
+      <!-- 1. Donut & Bar Charts for Top Categories -->
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div class="bg-slate-800 border border-slate-700 rounded-2xl p-5 shadow-sm">
           <div class="flex justify-between items-center mb-4">
@@ -459,14 +438,72 @@
         </div>
 
         <div class="bg-slate-800 border border-slate-700 rounded-2xl p-5 shadow-sm">
-          <h2 class="text-sm font-semibold text-slate-300 mb-4 flex items-center gap-2">
-            <i class="fa-solid fa-users text-cyan-400"></i> Consumos por Persona (ARS)
-          </h2>
+          <div class="flex justify-between items-center mb-4">
+            <h2 class="text-sm font-semibold text-slate-300 flex items-center gap-2">
+              <i class="fa-solid fa-chart-bar text-amber-400"></i> Top 10 Categorías (Gráfico de Barras)
+            </h2>
+            <span class="text-[11px] text-slate-400 font-mono">ARS</span>
+          </div>
           <div class="h-72 flex items-center justify-center relative">
-            <canvas id="memberChart"></canvas>
+            <canvas id="categoryBarChart"></canvas>
           </div>
         </div>
       </div>
+
+      <!-- 2. Sección Categorías (Cajitas con Total del Mes y Comparativa Mes Pasado / MoM) -->
+      <div class="bg-slate-800 border border-slate-700 rounded-2xl p-5 space-y-4 shadow-sm">
+        <div class="flex justify-between items-center border-b border-slate-700/60 pb-3">
+          <div>
+            <h2 class="text-base font-bold text-slate-100 flex items-center gap-2">
+              <i class="fa-solid fa-tags text-emerald-400"></i> Categorías — Totales y Comparativa Mes Pasado (MoM)
+            </h2>
+            <p class="text-xs text-slate-400">Gasto actual del período vs. mes anterior</p>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3" id="categoryTotalsCardsGrid">
+          <!-- Dinámico -->
+        </div>
+      </div>
+
+      <!-- 3. Consumo por Persona -->
+      <div class="bg-slate-800 border border-slate-700 rounded-2xl p-5 shadow-sm">
+        <h2 class="text-sm font-semibold text-slate-300 mb-4 flex items-center gap-2">
+          <i class="fa-solid fa-users text-cyan-400"></i> Consumos por Persona (ARS)
+        </h2>
+        <div class="h-72 flex items-center justify-center relative">
+          <canvas id="memberChart"></canvas>
+        </div>
+      </div>
+
+      <!-- 4. Gráfico de Tendencia Histórica (Al Final) -->
+      <div class="bg-slate-800 border border-slate-700 rounded-2xl p-5 shadow-sm space-y-4">
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 border-b border-slate-700/60 pb-3">
+          <div>
+            <h2 class="text-base font-bold text-slate-100 flex items-center gap-2">
+              <i class="fa-solid fa-chart-line text-emerald-400"></i> Tendencia de Gastos en el Tiempo (ARS)
+            </h2>
+            <p class="text-xs text-slate-400">Evolución mensual histórica filtrable por categoría</p>
+          </div>
+          
+          <div class="flex items-center gap-2">
+            <button onclick="toggleAllTrendCats(true)" class="text-[11px] font-semibold text-emerald-400 hover:text-emerald-300 bg-slate-900 border border-slate-700 px-2.5 py-1 rounded-lg transition">Todas Top 5</button>
+            <button onclick="toggleAllTrendCats(false)" class="text-[11px] font-semibold text-slate-400 hover:text-slate-200 bg-slate-900 border border-slate-700 px-2.5 py-1 rounded-lg transition">Limpiar</button>
+          </div>
+        </div>
+
+        <div>
+          <div class="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-1.5">Poner / Sacar Categorías en la curva:</div>
+          <div class="flex flex-wrap gap-1.5 max-h-28 overflow-y-auto pr-1" id="trendCatPillsContainer">
+            <!-- Populated dynamically -->
+          </div>
+        </div>
+
+        <div class="h-80 relative pt-2">
+          <canvas id="trendChartCanvas"></canvas>
+        </div>
+      </div>
+
     </section>
 
   </main>
@@ -579,6 +616,7 @@
               <option value="Flor">Flor</option>
               <option value="Pili">Pili</option>
               <option value="Tomy">Tomy</option>
+              <option value="Bauti">Bauti</option>
               <option value="Anita">Anita</option>
               <option value="Mamá">Mamá</option>
             </select>
@@ -766,6 +804,7 @@
       const s = String(p).trim();
       const u = s.toUpperCase();
       
+      if (u.includes('BAUTI') || u.includes('BAUTISTA')) return 'Bauti';
       if (u === 'ANITA' || u === 'ANA' || u === 'ANA ANDRES' || u.includes('ANITA') || u.includes('ANA ')) return 'Anita';
       if (u === 'MAMA' || u === 'MAMÁ' || u === 'SARA' || u.includes('MAMA') || u.includes('MAMÁ')) return 'Mamá';
       if (u === 'PILI' || u === 'PILAR' || u.includes('PILI') || u.includes('PILAR') || u.includes('MARIA DEL')) return 'Pili';
@@ -838,6 +877,7 @@
     let activeTrendCategories = [];
 
     let catChartInstance = null;
+    let catBarChartInstance = null;
     let memberChartInstance = null;
     let trendChartInstance = null;
 
@@ -901,6 +941,21 @@
           const ruleCat = applyRules(d);
           const finalCat = ruleCat || d.categoria || 'Sin categoría';
 
+          const rawUsd = d.usd !== undefined ? d.usd : (d.USD !== undefined ? d.USD : (d[Object.keys(d).find(k => k.toLowerCase() === 'usd')] || 0));
+          let usdVal = 0;
+          if (typeof rawUsd === 'number') {
+            usdVal = rawUsd;
+          } else if (rawUsd) {
+            let s = String(rawUsd).trim().replace('$', '').replace(/USD/gi, '').replace(/U\$S/gi, '').replace(/\s/g, '');
+            if (s.includes(',') && s.includes('.')) {
+              if (s.lastIndexOf(',') > s.lastIndexOf('.')) s = s.replace(/\./g, '').replace(',', '.');
+              else s = s.replace(/,/g, '');
+            } else if (s.includes(',')) {
+              s = s.replace(',', '.');
+            }
+            usdVal = parseFloat(s) || 0;
+          }
+
           return {
             ...d,
             rowId: d.row || (index + 1),
@@ -910,7 +965,7 @@
             categoria: finalCat,
             debitoCalculado: debitoVal,
             creditoCalculado: creditoVal,
-            usdCalculado: Number(d.usd || 0),
+            usdCalculado: usdVal,
             mesFmt: fmtMes(d.mes_resumen),
             tarjetaClean: d.tarjeta || (isBank ? 'Cta. Bancaria' : 'Tarjeta')
           };
@@ -943,7 +998,6 @@
       updateDashboard();
     }
 
-    // ── TAB RECURRENTES & SUSCRIPCIONES ──
     function renderRecurrentesTab() {
       const tbody = document.getElementById('tbodyRecurrentes');
       if (!tbody) return;
@@ -970,9 +1024,15 @@
       let totalFijoARS = 0;
       let totalFijoUSD = 0;
 
+      const sortDirVal = document.getElementById('sortRecurrentesSelect').value;
+      detected.sort((a, b) => {
+        const va = a.debitoCalculado || 0;
+        const vb = b.debitoCalculado || 0;
+        return sortDirVal === 'desc' ? vb - va : va - vb;
+      });
+
       const recurrentesFiltered = detected.filter(d => {
         if (selectedPersona) return d.personaNombre === selectedPersona;
-        // Por defecto en "Todas", excluir Anita y Mamá del total consolidado fijo
         if (d.personaNombre === 'Anita' || d.personaNombre === 'Mamá') return false;
         return true;
       });
@@ -1001,7 +1061,6 @@
       `).join('');
     }
 
-    // ── TAB PRESUPUESTOS Y METAS ──
     function renderPresupuestosTab() {
       const container = document.getElementById('budgetCardsContainer');
       if (!container) return;
@@ -1009,7 +1068,6 @@
       const budgets = loadBudgets();
       const filtered = getFilteredData();
 
-      // Calcular consumo real de las categorías en el mes seleccionado
       const spentMap = {};
       filtered.forEach(d => {
         const isExcluded = (!selectedPersona && (d.personaNombre === 'Anita' || d.personaNombre === 'Mamá'));
@@ -1174,7 +1232,7 @@
       cardSelect.innerHTML = `<option value="">Todas las Tarjetas / Cuentas (${allCards.length})</option>` +
         allCards.map(c => `<option value="${c}" ${c === selectedCard ? 'selected' : ''}>${c}</option>`).join('');
 
-      const personasList = ['Martín', 'Flor', 'Pili', 'Tomy', 'Anita', 'Mamá'];
+      const personasList = ['Martín', 'Flor', 'Pili', 'Tomy', 'Bauti', 'Anita', 'Mamá'];
       const memberContainer = document.getElementById('memberPillsContainer');
       memberContainer.innerHTML = `
         <button onclick="setPersonaFilter('')" class="pill-btn text-xs px-3 py-1.5 rounded-lg border border-slate-700 text-slate-300 ${selectedPersona === '' ? 'active' : 'bg-slate-900'}">
@@ -1327,7 +1385,7 @@
           (d.rawPersona || '').toLowerCase().includes(search);
 
         const matchCard = !selectedCard || d.tarjetaClean === selectedCard;
-        const matchCurr = !curr || (curr === 'pesos' ? (d.debitoCalculado > 0 || d.creditoCalculado > 0) : d.usdCalculado > 0);
+        const matchCurr = !curr || (curr === 'pesos' ? (d.debitoCalculado > 0 || d.creditoCalculado > 0) : d.usdCalculado !== 0);
         const matchCat = !selectedCategory || d.categoria === selectedCategory;
         const matchMonth = selectedMonths.length === 0 || selectedMonths.includes(d.mesFmt);
 
@@ -1389,7 +1447,7 @@
       }
 
       document.getElementById('kpi-ars').textContent = fmtP(totalARS);
-      document.getElementById('kpi-usd').textContent = totalUSD ? fmtUSD(totalUSD) : 'USD 0.00';
+      document.getElementById('kpi-usd').textContent = totalUSD !== 0 ? fmtUSD(totalUSD) : 'USD 0.00';
       document.getElementById('kpi-total-ops').textContent = filtered.length;
       document.getElementById('kpi-ars-sub').innerHTML = `<i class="fa-regular fa-credit-card mr-1"></i><span>${filtered.length} movimientos ${totalCredito > 0 ? '(Reintegros: ' + fmtP(totalCredito) + ')' : ''}</span>`;
       document.getElementById('kpi-top-cat').textContent = topCat;
@@ -1438,19 +1496,19 @@
         const icon = isMC ? 'fa-brands fa-cc-mastercard text-amber-400' : isAmex ? 'fa-brands fa-cc-amex text-emerald-400' : isCuenta ? 'fa-solid fa-building-columns text-cyan-400' : 'fa-brands fa-cc-visa text-blue-400';
 
         return `
-          <div onclick="setCardDirect('${cName}')" class="bg-slate-800/60 hover:bg-slate-800 border ${border} rounded-xl p-2.5 shadow-sm cursor-pointer transition">
-            <div class="flex justify-between items-start">
-              <div>
-                <span class="text-[9px] font-bold px-1.5 py-0.5 rounded ${tag} uppercase truncate max-w-[130px] inline-block">${cName}</span>
-                ${vto ? `<p class="text-[9px] font-mono text-slate-400 mt-0.5">Vto: <b class="text-slate-300">${vto}</b></p>` : ''}
+          <div onclick="setCardDirect('${cName}')" class="bg-slate-800/70 hover:bg-slate-800 border ${border} rounded-2xl p-3.5 shadow-sm cursor-pointer transition">
+            <div class="flex justify-between items-center">
+              <div class="flex items-center gap-2 flex-wrap">
+                <span class="text-[10px] font-bold px-2 py-0.5 rounded-md ${tag} uppercase tracking-wider">${cName}</span>
+                ${vto ? `<span class="text-[10px] font-mono text-slate-400">Vto: <b class="text-slate-200">${vto}</b></span>` : ''}
               </div>
-              <div class="text-right">
-                <i class="${icon} text-lg"></i>
-                ${isSelected ? '<span class="block text-[8px] text-emerald-400 font-bold">✓ Activa</span>' : ''}
+              <div class="flex items-center gap-1.5">
+                ${isSelected ? '<span class="text-[9px] text-emerald-400 font-bold bg-emerald-500/10 px-1.5 py-0.5 rounded border border-emerald-500/20">✓ Activa</span>' : ''}
+                <i class="${icon} text-xl"></i>
               </div>
             </div>
-            <p class="text-sm font-bold text-slate-100 mt-1">${fmtP(val.ars)}</p>
-            <p class="text-[11px] ${val.usd !== 0 ? 'text-cyan-400 font-semibold' : 'text-slate-400'}">
+            <p class="text-lg sm:text-xl font-bold text-slate-100 mt-2">${fmtP(val.ars)}</p>
+            <p class="text-xs ${val.usd !== 0 ? 'text-cyan-400 font-semibold' : 'text-slate-400'} mt-0.5">
               ${val.usd !== 0 ? fmtUSD(val.usd) : 'USD 0,00'}
             </p>
           </div>
@@ -1538,7 +1596,7 @@
         return `
           <tr class="hover:bg-slate-700/40 transition">
             <td class="py-2.5 px-3 font-medium text-slate-100">${d.descripcion}</td>
-            <td class="py-2.5 px-3 text-slate-300 font-semibold">${d.personaNombre}</td>
+            <td class="py-2.5 px-3 font-semibold text-slate-300">${d.personaNombre}</td>
             <td class="py-2.5 px-3 text-slate-300">${d.tarjetaClean}</td>
             <td class="py-2.5 px-3 text-center">
               <span class="px-2 py-0.5 rounded bg-slate-900 border border-slate-700 text-amber-300 font-mono text-[11px] font-bold">${d.cuota}</span>
@@ -1693,7 +1751,104 @@
         }
       });
 
-      const memberTotals = { 'Martín': 0, 'Flor': 0, 'Pili': 0, 'Tomy': 0, 'Anita': 0, 'Mamá': 0 };
+      const catBarCtx = document.getElementById('categoryBarChart').getContext('2d');
+      if (catBarChartInstance) catBarChartInstance.destroy();
+      catBarChartInstance = new Chart(catBarCtx, {
+        type: 'bar',
+        data: {
+          labels: sortedCats.map(c => c[0]),
+          datasets: [{
+            data: sortedCats.map(c => c[1]),
+            backgroundColor: [
+              '#10b981', '#38bdf8', '#f59e0b', '#ec4899', '#8b5cf6',
+              '#06b6d4', '#f43f5e', '#84cc16', '#a855f7', '#64748b'
+            ],
+            borderRadius: 6
+          }]
+        },
+        options: {
+          indexAxis: 'y',
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              callbacks: {
+                label: ctx => ` Gasto: ${fmtP(ctx.raw)}`
+              }
+            }
+          },
+          scales: {
+            x: { ticks: { color: '#64748b', font: { size: 9 }, callback: v => '$' + (v / 1000000).toFixed(1) + 'M' }, grid: { color: '#1e293b' } },
+            y: { ticks: { color: '#cbd5e1', font: { size: 10 } }, grid: { display: false } }
+          }
+        }
+      });
+
+      // Calcular MoM (Mes Pasado vs Mes Actual) para cada categoría del Top 10
+      // Obtener el mes actual seleccionado o el último mes si hay varios
+      const allMonthsSorted = [...new Set(DATA.map(d => d.mesFmt).filter(Boolean))].sort((a, b) => {
+        const [ma, ya] = a.split('-'), [mb, yb] = b.split('-');
+        return (parseInt(ya) - parseInt(yb)) || (MONTHS_ES.indexOf(ma) - MONTHS_ES.indexOf(mb));
+      });
+      const currentMonth = selectedMonths.length === 1 ? selectedMonths[0] : allMonthsSorted[allMonthsSorted.length - 1];
+      const currentIndex = allMonthsSorted.indexOf(currentMonth);
+      const prevMonth = currentIndex > 0 ? allMonthsSorted[currentIndex - 1] : null;
+
+      const prevMonthMap = {};
+      if (prevMonth) {
+        DATA.forEach(d => {
+          if (d.mesFmt === prevMonth) {
+            const isExcluded = (!selectedPersona && (d.personaNombre === 'Anita' || d.personaNombre === 'Mamá'));
+            if (!isExcluded) {
+              const p = d.debitoCalculado - d.creditoCalculado;
+              if (p > 0 && d.categoria) {
+                prevMonthMap[d.categoria] = (prevMonthMap[d.categoria] || 0) + p;
+              }
+            }
+          }
+        });
+      }
+
+      const totalsCardsContainer = document.getElementById('categoryTotalsCardsGrid');
+      if (totalsCardsContainer) {
+        totalsCardsContainer.innerHTML = sortedCats.map(([catName, val], idx) => {
+          const pct = totalGastadoCategorias > 0 ? ((val / totalGastadoCategorias) * 100).toFixed(1) : '0';
+          const prevVal = prevMonthMap[catName] || 0;
+          let diffHtml = '<span class="text-slate-500 text-[10px]">Sin comparativa previa</span>';
+          
+          if (prevMonth && prevVal > 0) {
+            const diff = val - prevVal;
+            const diffPct = ((diff / prevVal) * 100).toFixed(1);
+            const isUp = diff > 0;
+            const colorClass = isUp ? 'text-rose-400' : 'text-emerald-400';
+            const iconClass = isUp ? 'fa-arrow-trend-up' : 'fa-arrow-trend-down';
+            diffHtml = `
+              <span class="${colorClass} text-[10px] font-mono flex items-center gap-1">
+                <i class="fa-solid ${iconClass}"></i> ${isUp ? '+' : ''}${diffPct}% <span class="text-slate-400">vs ${prevMonth}</span>
+              </span>
+            `;
+          }
+
+          return `
+            <div class="bg-slate-900 border border-slate-700/80 rounded-xl p-3 space-y-1.5 shadow-sm">
+              <div class="flex justify-between items-start">
+                <div>
+                  <p class="text-xs font-bold text-slate-100 truncate max-w-[150px]">${catName}</p>
+                  <p class="text-[10px] text-slate-400 font-mono">${pct}% del total</p>
+                </div>
+                <p class="text-sm font-black text-emerald-400 font-mono">${fmtP(val)}</p>
+              </div>
+              <div class="pt-1 border-t border-slate-800 flex justify-between items-center text-[10px]">
+                <span class="text-slate-400">Mes Ant: ${prevVal > 0 ? fmtP(prevVal) : '—'}</span>
+                ${diffHtml}
+              </div>
+            </div>
+          `;
+        }).join('');
+      }
+
+      const memberTotals = { 'Martín': 0, 'Flor': 0, 'Pili': 0, 'Tomy': 0, 'Bauti': 0, 'Anita': 0, 'Mamá': 0 };
 
       filtered.forEach(d => {
         const p = (d.debitoCalculado - d.creditoCalculado);
@@ -1764,7 +1919,7 @@
               ${d.creditoCalculado > 0 ? fmtP(d.creditoCalculado) : ''}
             </td>
             <td class="py-2.5 px-3 text-right font-bold whitespace-nowrap text-cyan-400">
-              ${d.usdCalculado > 0 ? fmtUSD(d.usdCalculado) : ''}
+              ${d.usdCalculado !== 0 ? fmtUSD(d.usdCalculado) : ''}
             </td>
           </tr>
         `;
