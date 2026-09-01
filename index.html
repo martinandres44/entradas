@@ -420,7 +420,7 @@
       </div>
     </section>
 
-    <!-- TAB 5: GRÁFICOS & TENDENCIAS (CON SECCIÓN CATEGORÍAS Y TENDENCIA AL FINAL) -->
+    <!-- TAB 5: GRÁFICOS & TENDENCIAS -->
     <section id="tabContentGraficos" class="hidden space-y-6">
       
       <!-- 1. Donut & Bar Charts for Top Categories -->
@@ -450,14 +450,14 @@
         </div>
       </div>
 
-      <!-- 2. Sección Categorías (Cajitas con Total del Mes y Comparativa Mes Pasado / MoM) -->
+      <!-- 2. Sección Categorías (Cajitas con Total del Mes, Variación en $ y Comparativa Mes Pasado / MoM) -->
       <div class="bg-slate-800 border border-slate-700 rounded-2xl p-5 space-y-4 shadow-sm">
         <div class="flex justify-between items-center border-b border-slate-700/60 pb-3">
           <div>
             <h2 class="text-base font-bold text-slate-100 flex items-center gap-2">
               <i class="fa-solid fa-tags text-emerald-400"></i> Categorías — Totales y Comparativa Mes Pasado (MoM)
             </h2>
-            <p class="text-xs text-slate-400">Gasto actual del período vs. mes anterior</p>
+            <p class="text-xs text-slate-400">Gasto actual del período vs. mes anterior (en pesos y %)</p>
           </div>
         </div>
 
@@ -1785,8 +1785,6 @@
         }
       });
 
-      // Calcular MoM (Mes Pasado vs Mes Actual) para cada categoría del Top 10
-      // Obtener el mes actual seleccionado o el último mes si hay varios
       const allMonthsSorted = [...new Set(DATA.map(d => d.mesFmt).filter(Boolean))].sort((a, b) => {
         const [ma, ya] = a.split('-'), [mb, yb] = b.split('-');
         return (parseInt(ya) - parseInt(yb)) || (MONTHS_ES.indexOf(ma) - MONTHS_ES.indexOf(mb));
@@ -1823,9 +1821,10 @@
             const isUp = diff > 0;
             const colorClass = isUp ? 'text-rose-400' : 'text-emerald-400';
             const iconClass = isUp ? 'fa-arrow-trend-up' : 'fa-arrow-trend-down';
+            const diffFormatted = (isUp ? '+ ' : '- ') + fmtP(Math.abs(diff));
             diffHtml = `
               <span class="${colorClass} text-[10px] font-mono flex items-center gap-1">
-                <i class="fa-solid ${iconClass}"></i> ${isUp ? '+' : ''}${diffPct}% <span class="text-slate-400">vs ${prevMonth}</span>
+                <i class="fa-solid ${iconClass}"></i> ${diffFormatted} (${isUp ? '+' : ''}${diffPct}%)
               </span>
             `;
           }
